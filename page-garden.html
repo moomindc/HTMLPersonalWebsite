@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Garden — Daniel Clift</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0f0c08;--ink2:#333;--ink3:#444;--ink4:#666;--ink5:#888;--bg:#f5f0e8;--bg2:#e8e0d0;--red:#c0392b;--ochre:#d4943a;--slate:#2c4a6e;--sage:#4a6741;--border:3px solid var(--ink);--shadow:5px 5px 0 var(--ink);--shadow-lg:8px 8px 0 var(--ink);--chrome:#1a1510;--chrome-t:#c8c0b0;}
+.dark{--ink:#f5f0e8;--ink2:#ccc;--ink3:#bbb;--ink4:#999;--ink5:#777;--bg:#0f0c08;--bg2:#1a1510;--border:3px solid #f5f0e8;--shadow:5px 5px 0 #f5f0e8;--shadow-lg:8px 8px 0 #f5f0e8;--chrome:#000000;--chrome-t:#a09880;}
+body{background:var(--bg);color:var(--ink);font-family:'Space Grotesk',sans-serif;transition:background 0.2s,color 0.2s;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.bd-o{background-color:var(--ochre);background-image:radial-gradient(circle,rgba(15,12,8,0.4) 1.4px,transparent 1.4px);background-size:7px 7px;}
+.bd-r{background-color:var(--red);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 3px,transparent 3px);background-size:10px 10px;}
+.bd-s{background-color:var(--slate);background-image:radial-gradient(circle,rgba(255,255,255,0.2) 1.3px,transparent 1.3px);background-size:7px 7px;}
+.bd-g{background-color:var(--sage);background-image:radial-gradient(circle,rgba(255,255,255,0.18) 1.2px,transparent 1.2px);background-size:6px 6px;}
+.bd-raw{background-color:var(--bg2);background-image:radial-gradient(circle,rgba(15,12,8,0.18) 1px,transparent 1px);background-size:5px 5px;}
+.dark .bd-raw{background-image:radial-gradient(circle,rgba(245,240,232,0.18) 1px,transparent 1px);}
+header{border-bottom:var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;min-height:64px;background:var(--bg);}
+.h-name{font-size:1.3rem;font-weight:900;letter-spacing:-0.03em;padding:0 1.4rem;border-right:var(--border);display:flex;align-items:center;background:var(--ink);color:var(--bg);}
+.h-sub{display:flex;align-items:center;padding:0 1.4rem;font-size:0.75rem;color:var(--ink4);font-family:'JetBrains Mono',monospace;letter-spacing:0.02em;border-right:var(--border);}
+nav{display:flex;}
+nav a{display:flex;align-items:center;height:100%;padding:0 1.1rem;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:var(--ink);border-right:var(--border);transition:opacity 0.1s;}
+nav a:hover{opacity:0.72;}
+nav a.n1{background-color:var(--ochre);background-image:radial-gradient(circle,rgba(15,12,8,0.4) 1.4px,transparent 1.4px);background-size:7px 7px;}
+nav a.n2{background-color:var(--red);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 3px,transparent 3px);background-size:10px 10px;color:#f5f0e8;}
+nav a.n3{background-color:var(--slate);background-image:radial-gradient(circle,rgba(255,255,255,0.2) 1.3px,transparent 1.3px);background-size:7px 7px;color:#f5f0e8;}
+nav a.n4{background:var(--sage);color:#f5f0e8;}
+nav a.n5{background:var(--ink);color:var(--bg);}
+.dm-btn{display:flex;align-items:center;height:100%;padding:0 1rem;font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:transparent;border:none;border-left:var(--border);color:var(--ink);cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:background 0.1s,color 0.1s;}
+.dm-btn:hover{background:var(--ink);color:var(--bg);}
+.divider{display:grid;grid-template-columns:3fr 2fr 1fr 2fr;height:12px;border-top:3px solid var(--chrome);border-bottom:3px solid var(--chrome);}
+.divider div{border-right:2px solid var(--chrome);}
+.divider div:last-child{border-right:none;}
+footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding:1.25rem 1.5rem;background:var(--chrome);}
+.dark footer{background:#0f0c08;}
+.f-name{font-size:0.95rem;font-weight:900;letter-spacing:-0.02em;color:var(--chrome-t);}
+.f-meta{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#555;margin-top:2px;}
+.f-links{display:flex;gap:12px;}
+.f-links a{font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#555;text-decoration:none;}
+.f-links a:hover{color:var(--ochre);}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;padding:2px 8px;border:2px solid var(--ink);}
+.tag-o{background:var(--ochre);color:var(--ink);}
+.tag-s{background:var(--slate);color:#f5f0e8;}
+.tag-g{background:var(--sage);color:#f5f0e8;}
+.tag-r{background:var(--red);color:#f5f0e8;}
+.tag-ink{background:var(--ink);color:var(--bg);}
+/* hero — text left, full bd-raw panel right bleeds edge */
+.hero{display:grid;grid-template-columns:1fr 240px;border-bottom:var(--border);min-height:240px;}
+.hero-left{padding:2.5rem 2rem;border-right:var(--border);background:var(--bg);}
+.hero-right{position:relative;overflow:hidden;}
+/* legend bar */
+.legend-bar{display:flex;align-items:center;gap:0;border-bottom:var(--border);background:var(--bg);flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:8px;padding:8px 1.2rem;border-right:var(--border);font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--ink5);}
+/* note grid */
+.note-grid{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:var(--border);}
+.note-card{border-right:var(--border);border-bottom:var(--border);padding:1.4rem;background:var(--bg);cursor:pointer;transition:background 0.1s;position:relative;overflow:hidden;}
+.note-card:hover{background:var(--bg2);}
+.note-card:nth-child(3n){border-right:none;}
+.note-card h3{font-size:1rem;font-weight:900;letter-spacing:-0.02em;margin:0.5rem 0 0.4rem;color:var(--ink);}
+.note-card p{font-size:0.8rem;line-height:1.65;color:var(--ink3);}
+.note-foot{display:flex;align-items:center;justify-content:space-between;margin-top:0.75rem;}
+.maturity{display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--ink5);}
+/* == responsive == */
+html{background:#f5f0e8;}
+html.dark{background:#0f0c08;}
+body{max-width:1440px;margin:0 auto;}
+@media(max-width:960px){header{grid-template-columns:auto 1fr;}.h-sub{display:none;}}
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr;min-height:0;}
+  .hero-right{display:none;}
+  .note-grid{grid-template-columns:repeat(2,1fr);}
+  .note-card:nth-child(3n){border-right:var(--border);}
+  .note-card:nth-child(2n){border-right:none;}
+}
+@media(max-width:640px){
+  header{display:flex;flex-wrap:wrap;}
+  .h-name{flex:0 0 100%;border-right:none;border-bottom:var(--border);padding:1rem 1.4rem;}
+  nav{flex:0 0 100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  nav::-webkit-scrollbar{display:none;}
+  nav a{height:44px;white-space:nowrap;flex-shrink:0;}
+  .dm-btn{flex-shrink:0;}
+  .note-grid{grid-template-columns:1fr;}
+  .note-card{border-right:none;}
+  .note-card:nth-child(3n){border-right:none;}
+  .legend-bar{overflow-x:auto;flex-wrap:nowrap;}
+  .legend-item{flex-shrink:0;white-space:nowrap;}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-name">Daniel Clift</div>
+  <div class="h-sub">Garden — notes growing in public</div>
+  <nav>
+    <a href="home.html" class="n1">Projects</a>
+    <a href="writing.html" class="n2">Writing</a>
+    <a href="now.html" class="n3">Now</a>
+    <a href="spain.html" class="n4">Spain</a>
+    <a href="about.html" class="n5">Contact</a>
+    <button class="dm-btn" id="dmb" onclick="toggleDark()">&#9680; Dark</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-left">
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink5);margin-bottom:1rem;">Digital garden</p>
+    <h1 style="font-size:clamp(2rem,4vw,3.5rem);font-weight:900;line-height:0.9;letter-spacing:-0.04em;color:var(--ink);margin-bottom:0.75rem;">Notes growing<br>in public.</h1>
+    <p style="font-size:0.9rem;line-height:1.75;color:var(--ink3);max-width:420px;">Unfinished thoughts, half-formed ideas, things I'm figuring out. Not blog posts — raw material. Some of this becomes writing. Most of it stays here.</p>
+  </div>
+  <div class="hero-right">
+    <div class="bd-raw" style="position:absolute;inset:0;"></div>
+    <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.55;">
+      <path d="M20 200 Q60 40 120 80 Q180 120 200 20" fill="none" stroke="#0f0c08" stroke-width="6" stroke-linecap="round"/>
+      <path d="M40 220 Q100 160 160 180 Q200 195 220 160" fill="none" stroke="#0f0c08" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M10 120 Q50 100 80 130" fill="none" stroke="#0f0c08" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="120" cy="80" r="8" fill="#0f0c08" opacity="0.6"/>
+      <circle cx="200" cy="20" r="5" fill="#0f0c08" opacity="0.4"/>
+    </svg>
+  </div>
+</section>
+
+<div class="legend-bar">
+  <div class="legend-item"><svg width="12" height="12" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Seed — early idea</div>
+  <div class="legend-item"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2 12 Q7 2 12 12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Growing — active</div>
+  <div class="legend-item"><svg width="12" height="12" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="currentColor"/></svg>Done — settled</div>
+</div>
+
+<div class="note-grid">
+  <div class="note-card">
+    <span class="tag tag-ink">AI</span>
+    <h3>What agent frameworks actually do well</h3>
+    <p>Six months of testing. The gap between demo and production is large. Notes on what survives contact with reality.</p>
+    <div class="note-foot"><span class="maturity"><svg width="11" height="11" viewBox="0 0 14 14"><path d="M2 12 Q7 2 12 12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Growing</span><span class="mono" style="font-size:0.58rem;color:var(--ink5);">Apr 2026</span></div>
+  </div>
+  <div class="note-card">
+    <span class="tag tag-o">Python</span>
+    <h3>UK open data — a running audit</h3>
+    <p>TfL is good. Companies House is painful. MOT history is a hidden gem. Postcode.io is excellent and underused.</p>
+    <div class="note-foot"><span class="maturity"><svg width="11" height="11" viewBox="0 0 14 14"><path d="M2 12 Q7 2 12 12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Growing</span><span class="mono" style="font-size:0.58rem;color:var(--ink5);">Mar 2026</span></div>
+  </div>
+  <div class="note-card">
+    <span class="tag tag-g">Spain</span>
+    <h3>NIE, NLV, Digital Nomad Visa — the differences</h3>
+    <p>Confused by the visa options? So was I. Quick reference for UK citizens post-Brexit moving to Spain.</p>
+    <div class="note-foot"><span class="maturity"><svg width="11" height="11" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="currentColor"/></svg>Done</span><span class="mono" style="font-size:0.58rem;color:var(--ink5);">Feb 2026</span></div>
+  </div>
+  <div class="note-card">
+    <span class="tag tag-s">TDM</span>
+    <h3>Synthetic data — where it actually works</h3>
+    <p>Not everywhere. Notes on realistic use cases vs the vendor hype. Spoiler: subsetting is still underrated.</p>
+    <div class="note-foot"><span class="maturity"><svg width="11" height="11" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Seed</span><span class="mono" style="font-size:0.58rem;color:var(--ink5);">May 2026</span></div>
+  </div>
+  <div class="note-card">
+    <span class="tag tag-s">iOS</span>
+    <h3>SwiftUI vs UIKit — a Python dev's confusion</h3>
+    <p>Coming from Python, both feel alien. Working out which to invest in first and why the answer isn't obvious.</p>
+    <div class="note-foot"><span class="maturity"><svg width="11" height="11" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Seed</span><span class="mono" style="font-size:0.58rem;color:var(--ink5);">May 2026</span></div>
+  </div>
+  <div class="note-card">
+    <span class="tag tag-r">Site</span>
+    <h3>Building this site — decisions and trade-offs</h3>
+    <p>Why Art Brut × Brutalism. Why Astro. Why no analytics. Notes on the design process and what I'd do differently.</p>
+    <div class="note-foot"><span class="maturity"><svg width="11" height="11" viewBox="0 0 14 14"><path d="M2 12 Q7 2 12 12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Growing</span><span class="mono" style="font-size:0.58rem;color:var(--ink5);">Apr 2026</span></div>
+  </div>
+</div>
+
+<div class="divider"><div class="bd-g"></div><div style="background:var(--chrome);"></div><div class="bd-o"></div><div class="bd-r"></div></div>
+<footer>
+  <div><div class="f-name">Daniel Clift</div><div class="f-meta">Surrey · Spain-bound · Built raw · 2026</div></div>
+  <div class="f-links"><a href="#">GitHub</a><a href="#">LinkedIn</a><a href="#">RSS</a><a href="#">Email</a></div>
+</footer>
+<script>function toggleDark(){const d=document.body.classList.toggle('dark');document.documentElement.classList.toggle('dark',d);document.getElementById('dmb').textContent=d?'◑ Light':'◐ Dark';}</script>
+</body>
+</html>

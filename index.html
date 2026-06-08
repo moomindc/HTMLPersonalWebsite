@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CouchSurfer.co.uk</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0f0c08;--ink2:#333;--ink3:#444;--ink4:#666;--ink5:#888;--bg:#f5f0e8;--bg2:#e8e0d0;--red:#c0392b;--ochre:#d4943a;--slate:#2c4a6e;--sage:#4a6741;--border:3px solid var(--ink);--shadow:5px 5px 0 var(--ink);--shadow-lg:8px 8px 0 var(--ink);--chrome:#1a1510;--chrome-t:#c8c0b0;}
+.dark{--ink:#f5f0e8;--ink2:#ccc;--ink3:#bbb;--ink4:#999;--ink5:#777;--bg:#0f0c08;--bg2:#1a1510;--border:3px solid #f5f0e8;--shadow:5px 5px 0 #f5f0e8;--shadow-lg:8px 8px 0 #f5f0e8;--chrome:#000000;--chrome-t:#a09880;}
+body{background:var(--bg);color:var(--ink);font-family:'Space Grotesk',sans-serif;transition:background 0.2s,color 0.2s;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.bd-o{background-color:var(--ochre);background-image:radial-gradient(circle,rgba(15,12,8,0.4) 1.4px,transparent 1.4px);background-size:7px 7px;}
+.bd-r{background-color:var(--red);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 3px,transparent 3px);background-size:10px 10px;}
+.bd-s{background-color:var(--slate);background-image:radial-gradient(circle,rgba(255,255,255,0.2) 1.3px,transparent 1.3px);background-size:7px 7px;}
+.bd-g{background-color:var(--sage);background-image:radial-gradient(circle,rgba(255,255,255,0.18) 1.2px,transparent 1.2px);background-size:6px 6px;}
+.bd-raw{background-color:var(--bg2);background-image:radial-gradient(circle,rgba(15,12,8,0.18) 1px,transparent 1px);background-size:5px 5px;}
+.dark .bd-raw{background-image:radial-gradient(circle,rgba(245,240,232,0.18) 1px,transparent 1px);}
+/* nav */
+header{border-bottom:var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;min-height:64px;background:var(--bg);}
+.h-name{font-size:1.3rem;font-weight:900;letter-spacing:-0.03em;padding:0 1.4rem;border-right:var(--border);display:flex;align-items:center;background:var(--ink);color:var(--bg);}
+.h-sub{display:flex;align-items:center;padding:0 1.4rem;font-size:0.75rem;color:var(--ink4);font-family:'JetBrains Mono',monospace;letter-spacing:0.02em;border-right:var(--border);}
+nav{display:flex;}
+nav a{display:flex;align-items:center;height:100%;padding:0 1.1rem;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:var(--ink);border-right:var(--border);transition:opacity 0.1s;}
+nav a:hover{opacity:0.72;}
+nav a.n1{background-color:var(--ochre);background-image:radial-gradient(circle,rgba(15,12,8,0.4) 1.4px,transparent 1.4px);background-size:7px 7px;}
+nav a.n2{background-color:var(--red);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 3px,transparent 3px);background-size:10px 10px;color:#f5f0e8;}
+nav a.n3{background-color:var(--slate);background-image:radial-gradient(circle,rgba(255,255,255,0.2) 1.3px,transparent 1.3px);background-size:7px 7px;color:#f5f0e8;}
+nav a.n4{background:var(--sage);color:#f5f0e8;}
+nav a.n5{background:var(--ink);color:var(--bg);}
+.dm-btn{display:flex;align-items:center;height:100%;padding:0 1rem;font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:transparent;border:none;border-left:var(--border);color:var(--ink);cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:background 0.1s,color 0.1s;}
+.dm-btn:hover{background:var(--ink);color:var(--bg);}
+/* divider + footer — fixed dark */
+.divider{display:grid;grid-template-columns:3fr 2fr 1fr 2fr;height:12px;border-top:3px solid var(--chrome);border-bottom:3px solid var(--chrome);}
+.divider div{border-right:2px solid var(--chrome);}
+.divider div:last-child{border-right:none;}
+footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding:1.25rem 1.5rem;background:var(--chrome);}
+.dark footer{background:#0f0c08;}
+.f-name{font-size:0.95rem;font-weight:900;letter-spacing:-0.02em;color:var(--chrome-t);}
+.f-meta{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#555;margin-top:2px;}
+.f-links{display:flex;gap:12px;}
+.f-links a{font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#555;text-decoration:none;}
+.f-links a:hover{color:var(--ochre);}
+/* buttons */
+.btn{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:9px 18px;border:var(--border);box-shadow:var(--shadow);cursor:pointer;text-decoration:none;display:inline-block;transition:transform 0.1s,box-shadow 0.1s;background:var(--bg);color:var(--ink);}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-lg);}
+.btn:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink);}
+.btn-fill{background:var(--ink);color:var(--bg);}
+.btn-fill:hover{background:var(--red);color:#f5f0e8;border-color:var(--red);}
+/* tags */
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;padding:2px 8px;border:2px solid var(--ink);}
+.tag-o{background:var(--ochre);color:var(--ink);}
+.tag-s{background:var(--slate);color:#f5f0e8;}
+.tag-g{background:var(--sage);color:#f5f0e8;}
+.tag-r{background:var(--red);color:#f5f0e8;}
+.tag-ink{background:var(--ink);color:var(--bg);}
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 320px;min-height:420px;border-bottom:var(--border);}
+.hero-left{padding:3rem 2.5rem;border-right:var(--border);background:var(--bg);position:relative;overflow:hidden;}
+.hero-left::before{content:'';position:absolute;top:-20px;right:-40px;width:280px;height:280px;opacity:0.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M20 180 Q40 20 100 40 Q160 60 180 20' stroke='%230f0c08' stroke-width='28' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-size:contain;background-repeat:no-repeat;}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink5);margin-bottom:1.2rem;}
+.hero-h1{font-size:clamp(3rem,6vw,5rem);font-weight:900;line-height:0.92;letter-spacing:-0.04em;margin-bottom:1.5rem;color:var(--ink);}
+.hero-h1 .u{position:relative;display:inline-block;}
+.hero-h1 .u::after{content:'';position:absolute;bottom:-4px;left:-2px;right:-2px;height:5px;background:var(--red);transform:skewX(-3deg) rotate(-0.5deg);}
+.hero-mark{display:inline-block;background-color:var(--ochre);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 1.3px,transparent 1.3px);background-size:6px 6px;border:var(--border);padding:0 0.2em;box-shadow:var(--shadow);position:relative;top:-2px;color:var(--ink);}
+.hero-body{font-size:1rem;line-height:1.75;color:var(--ink3);max-width:440px;margin-bottom:2rem;border-left:4px solid var(--ink);padding-left:1rem;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;}
+.hero-right{position:relative;overflow:hidden;min-height:420px;background:var(--bg2);}
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:var(--border);}
+.cell{border-right:var(--border);border-bottom:var(--border);padding:1.75rem;background:var(--bg);position:relative;overflow:hidden;}
+.cell:nth-child(3n){border-right:none;}
+.cell-label{font-family:'JetBrains Mono',monospace;font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink5);margin-bottom:0.6rem;}
+.cell h2{font-size:1.2rem;font-weight:900;letter-spacing:-0.02em;line-height:1.1;margin-bottom:0.6rem;color:var(--ink);}
+.cell p{font-size:0.85rem;line-height:1.65;color:var(--ink3);}
+.corner-tri{position:absolute;bottom:-1px;right:-1px;width:44px;height:44px;clip-path:polygon(100% 0,100% 100%,0 100%);}
+.cell-wide{grid-column:1/3;border-right:var(--border);}
+.now-row{display:grid;grid-template-columns:repeat(4,1fr);margin-top:1rem;}
+.now-item{border:var(--border);margin:-1px -1px 0 0;padding:10px 12px;position:relative;overflow:hidden;}
+.now-k{font-family:'JetBrains Mono',monospace;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink5);margin-bottom:3px;}
+.now-v{font-size:0.85rem;font-weight:700;color:var(--ink);}
+.ni-ink{background:var(--ink);}
+.ni-ink .now-k{color:var(--ink4);}
+.ni-ink .now-v{color:var(--bg);}
+.ni-slate .now-k{color:rgba(245,240,232,0.5);}
+.ni-slate .now-v{color:#f5f0e8;}
+.ni-ochre .now-k{color:rgba(15,12,8,0.5);}
+.cell-spain{border-right:none;padding:0;position:relative;overflow:hidden;}
+.cell-spain-inner{position:relative;z-index:1;padding:1.75rem;}
+.cell-spain h2{color:#f5f0e8;}
+.cell-spain p{color:rgba(245,240,232,0.85);font-size:0.85rem;line-height:1.65;margin-top:0.5rem;}
+/* writing */
+.sec-horiz{padding:9px 1.5rem;font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--bg);background:var(--ink);border-bottom:var(--border);font-family:'JetBrains Mono',monospace;}
+.post{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding:14px 1.5rem;border-bottom:1.5px solid var(--ink);cursor:pointer;transition:background 0.1s;background:var(--bg);}
+.post:last-child{border-bottom:none;}
+.post:hover{background:var(--bg2);}
+.post-t{font-size:0.95rem;font-weight:700;letter-spacing:-0.01em;color:var(--ink);}
+.post-d{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--ink5);white-space:nowrap;}
+/* == responsive == */
+html{background:#f5f0e8;}
+html.dark{background:#0f0c08;}
+body{max-width:1440px;margin:0 auto;}
+@media(max-width:960px){header{grid-template-columns:auto 1fr;}.h-sub{display:none;}}
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr;min-height:0;}
+  .hero-right{display:none;}
+  .grid{grid-template-columns:repeat(2,1fr);}
+  .cell:nth-child(3n){border-right:var(--border);}
+  .cell:nth-child(2n){border-right:none;}
+  .cell-wide,.cell-spain{grid-column:1/3;}
+}
+@media(max-width:640px){
+  header{display:flex;flex-wrap:wrap;}
+  .h-name{flex:0 0 100%;border-right:none;border-bottom:var(--border);padding:1rem 1.4rem;}
+  nav{flex:0 0 100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  nav::-webkit-scrollbar{display:none;}
+  nav a{height:44px;white-space:nowrap;flex-shrink:0;}
+  .dm-btn{flex-shrink:0;}
+  .hero-h1{font-size:clamp(2rem,8vw,3rem);}
+  .grid{grid-template-columns:1fr;}
+  .cell,.cell-wide,.cell-spain{grid-column:auto;border-right:none;}
+  .cell:nth-child(3n){border-right:none;}
+  .now-row{grid-template-columns:repeat(2,1fr);}
+  .post{flex-direction:column;gap:4px;}
+  .post-d{white-space:normal;}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-name"><a href="index.html" style="color:inherit;text-decoration:none;">CouchSurfer.co.uk</a></div>
+  <div class="h-sub">Travel · Encryption · Running · Programing · Spain · Cyber · Building in public</div>
+  <nav>
+    <a href="projects.html" class="n1">Projects</a>
+    <a href="writing.html" class="n2">Writing</a>
+    <a href="now.html" class="n3">Now</a>
+    <!-- <a href="spain.html" class="n4">Spain</a> -->
+    <a href="about.html" class="n5">Contact</a>
+    <button class="dm-btn" id="dmb" onclick="toggleDark()">&#9680; Dark</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Personal site · Est. 2026 · v1.0</p>
+    <h1 class="hero-h1">Nerd, computer enthusiast,<br><span class="u">cat</span> parent and<br><span class="hero-mark">aspiring Andalusian.</span></h1>
+    <p class="hero-body">Python hobbyist, AI tools enthusiast, test data professional. Building things in public. Plotting an early exit from the British weather to southern Spain.</p>
+    <div class="btn-row">
+      <a href="projects.html" class="btn btn-fill">See projects</a>
+      <a href="writing.html" class="btn">Read the writing</a>
+      <a href="spain.html" class="btn">The Spain plan →</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <svg viewBox="0 0 320 420" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%;">
+      <defs>
+        <pattern id="po" x="0" y="0" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1.3" fill="rgba(15,12,8,0.38)"/></pattern>
+        <pattern id="ps" x="0" y="0" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1.1" fill="rgba(255,255,255,0.22)"/></pattern>
+        <pattern id="pr" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="3" fill="rgba(15,12,8,0.32)"/></pattern>
+      </defs>
+      <rect width="320" height="420" fill="#e8e0d0"/>
+      <g transform="rotate(-2 140 130)"><rect x="40" y="60" width="200" height="140" fill="#d4943a" stroke="#0f0c08" stroke-width="3"/><rect x="40" y="60" width="200" height="140" fill="url(#po)"/></g>
+      <g transform="rotate(1.5 180 280)"><rect x="90" y="240" width="190" height="110" fill="#2c4a6e" stroke="#0f0c08" stroke-width="3"/><rect x="90" y="240" width="190" height="110" fill="url(#ps)"/></g>
+      <g transform="rotate(3 80 200)"><rect x="20" y="190" width="70" height="110" fill="#c0392b" stroke="#0f0c08" stroke-width="3"/><rect x="20" y="190" width="70" height="110" fill="url(#pr)"/></g>
+      <path d="M30 210 Q90 204 160 212 Q200 215 240 208" fill="none" stroke="#0f0c08" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+      <rect x="120" y="100" width="80" height="50" fill="#f5f0e8" stroke="#0f0c08" stroke-width="2.5" transform="rotate(1 160 125)"/>
+      <text x="160" y="121" font-family="'Space Grotesk',sans-serif" font-size="11" font-weight="900" fill="#0f0c08" text-anchor="middle">DANIEL</text>
+      <text x="160" y="137" font-family="'Space Grotesk',sans-serif" font-size="11" font-weight="900" fill="#0f0c08" text-anchor="middle">CLIFT</text>
+      <g transform="rotate(-1.5 55 370)"><rect x="20" y="340" width="90" height="60" fill="#4a6741" stroke="#0f0c08" stroke-width="2.5"/></g>
+      <path d="M210 170 Q240 155 255 180 Q260 195 235 200" fill="none" stroke="#0f0c08" stroke-width="2.5" stroke-linecap="round" opacity="0.35"/>
+    </svg>
+  </div>
+</section>
+
+<div class="divider"><div style="background:var(--chrome);"></div><div class="bd-o"></div><div class="bd-r"></div><div class="bd-s"></div></div>
+
+<div class="grid">
+  <div class="cell">
+    <div class="corner-tri bd-o"></div>
+    <svg style="position:absolute;top:12px;right:12px;width:70px;opacity:0.1;" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg"><path d="M5 20 Q30 5 60 18 Q90 30 115 10" fill="none" stroke="#0f0c08" stroke-width="5" stroke-linecap="round"/></svg>
+    <p class="cell-label">Python · 2026</p>
+    <h2>UK Open Data iOS App</h2>
+    <p>Wrangling TfL, Companies House, MOT history, and postcode data into a single iOS interface.</p>
+    <a href="projects.html" class="btn" style="margin-top:1.25rem;font-size:0.75rem;padding:6px 12px;">View →</a>
+  </div>
+  <div class="cell">
+    <div class="corner-tri bd-s"></div>
+    <svg style="position:absolute;top:14px;right:14px;width:34px;opacity:0.1;" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M5 5 L35 35 M35 5 L5 35" stroke="#0f0c08" stroke-width="6" stroke-linecap="round"/></svg>
+    <p class="cell-label">AI · Agents · 2026</p>
+    <h2>Agent Framework Experiments</h2>
+    <p>Six months evaluating OpenClaw, Zapier Agents, and Claude in M365. Brutally honest verdict.</p>
+    <a href="projects.html" class="btn" style="margin-top:1.25rem;font-size:0.75rem;padding:6px 12px;">View →</a>
+  </div>
+  <div class="cell">
+    <div class="corner-tri bd-r"></div>
+    <svg style="position:absolute;top:12px;right:10px;width:54px;opacity:0.1;" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><path d="M5 35 Q30 0 55 35" fill="none" stroke="#0f0c08" stroke-width="6" stroke-linecap="round"/></svg>
+    <p class="cell-label">Research · TDM</p>
+    <h2>TDM Competitive Analysis</h2>
+    <p>Gap analysis: OpenText SDM vs Delphix, Informatica, K2View. Notes made public.</p>
+    <a href="projects.html" class="btn" style="margin-top:1.25rem;font-size:0.75rem;padding:6px 12px;">View →</a>
+  </div>
+
+  <div class="cell cell-wide">
+    <p class="cell-label">Now — May 2026</p>
+    <h2>What I'm up to</h2>
+    <div class="now-row">
+      <div class="now-item bd-raw"><div class="now-k">Building</div><div class="now-v">iOS open data app</div></div>
+      <div class="now-item ni-ink"><div class="now-k">Exploring</div><div class="now-v">AI agent frameworks</div></div>
+      <div class="now-item ni-slate bd-s"><div class="now-k">Location</div><div class="now-v">Surrey, UK</div></div>
+      <div class="now-item ni-ochre bd-o"><div class="now-k">Planning</div><div class="now-v">Spain, Q4 2026</div></div>
+    </div>
+  </div>
+  <div class="cell cell-spain">
+    <div class="bd-o" style="position:absolute;inset:0;"></div>
+    <div class="cell-spain-inner">
+      <p class="cell-label" style="color:rgba(245,240,232,0.55);">The mission</p>
+      <h2>The Spain chapter</h2>
+      <p>Early retirement. Andalusia scouting. NIE forms. The plan, the research, and where we're up to.</p>
+      <a href="spain.html" class="btn" style="margin-top:1.25rem;font-size:0.75rem;padding:6px 12px;background:#f5f0e8;color:#0f0c08;border-color:#0f0c08;">Read the plan →</a>
+    </div>
+  </div>
+</div>
+
+<div class="divider"><div class="bd-g"></div><div style="background:var(--chrome);"></div><div class="bd-o"></div><div class="bd-r"></div></div>
+
+<section>
+  <div class="sec-horiz">Latest writing</div>
+  <div class="post"><span class="post-t">AI agent frameworks — six months in, what actually matters</span><span class="post-d">May 2026</span></div>
+  <div class="post"><span class="post-t">UK open data is a mess, and that's what makes it interesting</span><span class="post-d">Apr 2026</span></div>
+  <div class="post"><span class="post-t">Why we're moving to Spain before we're ready</span><span class="post-d">Mar 2026</span></div>
+</section>
+
+<div class="divider"><div class="bd-s"></div><div class="bd-o"></div><div style="background:var(--chrome);"></div><div class="bd-r"></div></div>
+
+<footer>
+  <div>
+    <div class="f-name">Daniel Clift</div>
+    <div class="f-meta">Inspired by <span class="f-links"><a href="https://en.wikipedia.org/wiki/Brutalist_architecture">Brutalism</a>, <a href="https://en.wikipedia.org/wiki/Abstract_expressionism">Abstract expressionism</a>, <a href="https://en.wikipedia.org/wiki/Pop_art">Pop art</a></span></div>
+  </div>
+  <div class="f-links"><a href="https://github.com/moomindc?tab=repositories">GitHub</a><a href="https://www.linkedin.com/in/danielclift/">LinkedIn</a><a href="mailto:dan@couchsurfer.co.uk">Email</a></div>
+</footer>
+
+<script>function toggleDark(){const d=document.body.classList.toggle('dark');document.documentElement.classList.toggle('dark',d);document.getElementById('dmb').textContent=d?'◑ Light':'◐ Dark';}</script>
+</body>
+</html>

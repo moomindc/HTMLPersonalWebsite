@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Writing — Daniel Clift</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0f0c08;--ink2:#333;--ink3:#444;--ink4:#666;--ink5:#888;--bg:#f5f0e8;--bg2:#e8e0d0;--red:#c0392b;--ochre:#d4943a;--slate:#2c4a6e;--sage:#4a6741;--border:3px solid var(--ink);--shadow:5px 5px 0 var(--ink);--shadow-lg:8px 8px 0 var(--ink);--chrome:#1a1510;--chrome-t:#c8c0b0;}
+.dark{--ink:#f5f0e8;--ink2:#ccc;--ink3:#bbb;--ink4:#999;--ink5:#777;--bg:#0f0c08;--bg2:#1a1510;--border:3px solid #f5f0e8;--shadow:5px 5px 0 #f5f0e8;--shadow-lg:8px 8px 0 #f5f0e8;--chrome:#000000;--chrome-t:#a09880;}
+body{background:var(--bg);color:var(--ink);font-family:'Space Grotesk',sans-serif;transition:background 0.2s,color 0.2s;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.bd-o{background-color:var(--ochre);background-image:radial-gradient(circle,rgba(15,12,8,0.4) 1.4px,transparent 1.4px);background-size:7px 7px;}
+.bd-r{background-color:var(--red);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 3px,transparent 3px);background-size:10px 10px;}
+.bd-s{background-color:var(--slate);background-image:radial-gradient(circle,rgba(255,255,255,0.2) 1.3px,transparent 1.3px);background-size:7px 7px;}
+.bd-g{background-color:var(--sage);background-image:radial-gradient(circle,rgba(255,255,255,0.18) 1.2px,transparent 1.2px);background-size:6px 6px;}
+.bd-raw{background-color:var(--bg2);background-image:radial-gradient(circle,rgba(15,12,8,0.18) 1px,transparent 1px);background-size:5px 5px;}
+.dark .bd-raw{background-image:radial-gradient(circle,rgba(245,240,232,0.18) 1px,transparent 1px);}
+header{border-bottom:var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;min-height:64px;background:var(--bg);}
+.h-name{font-size:1.3rem;font-weight:900;letter-spacing:-0.03em;padding:0 1.4rem;border-right:var(--border);display:flex;align-items:center;background:var(--ink);color:var(--bg);}
+.h-sub{display:flex;align-items:center;padding:0 1.4rem;font-size:0.75rem;color:var(--ink4);font-family:'JetBrains Mono',monospace;letter-spacing:0.02em;border-right:var(--border);}
+nav{display:flex;}
+nav a{display:flex;align-items:center;height:100%;padding:0 1.1rem;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:var(--ink);border-right:var(--border);transition:opacity 0.1s;}
+nav a:hover{opacity:0.72;}
+nav a.n1{background-color:var(--ochre);background-image:radial-gradient(circle,rgba(15,12,8,0.4) 1.4px,transparent 1.4px);background-size:7px 7px;}
+nav a.n2{background-color:var(--red);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 3px,transparent 3px);background-size:10px 10px;color:#f5f0e8;}
+nav a.n3{background-color:var(--slate);background-image:radial-gradient(circle,rgba(255,255,255,0.2) 1.3px,transparent 1.3px);background-size:7px 7px;color:#f5f0e8;}
+nav a.n4{background:var(--sage);color:#f5f0e8;}
+nav a.n5{background:var(--ink);color:var(--bg);}
+.dm-btn{display:flex;align-items:center;height:100%;padding:0 1rem;font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:transparent;border:none;border-left:var(--border);color:var(--ink);cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:background 0.1s,color 0.1s;}
+.dm-btn:hover{background:var(--ink);color:var(--bg);}
+.divider{display:grid;grid-template-columns:3fr 2fr 1fr 2fr;height:12px;border-top:3px solid var(--chrome);border-bottom:3px solid var(--chrome);}
+.divider div{border-right:2px solid var(--chrome);}
+.divider div:last-child{border-right:none;}
+footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding:1.25rem 1.5rem;background:var(--chrome);}
+.dark footer{background:#0f0c08;}
+.f-name{font-size:0.95rem;font-weight:900;letter-spacing:-0.02em;color:var(--chrome-t);}
+.f-meta{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#555;margin-top:2px;}
+.f-links{display:flex;gap:12px;}
+.f-links a{font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#555;text-decoration:none;}
+.f-links a:hover{color:var(--ochre);}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;padding:2px 8px;border:2px solid var(--ink);}
+.tag-o{background:var(--ochre);color:var(--ink);}
+.tag-s{background:var(--slate);color:#f5f0e8;}
+.tag-g{background:var(--sage);color:#f5f0e8;}
+.tag-r{background:var(--red);color:#f5f0e8;}
+.tag-ink{background:var(--ink);color:var(--bg);}
+/* hero — split, text left, bd-s panel right with raw mark */
+.hero{display:grid;grid-template-columns:1fr 220px;border-bottom:var(--border);min-height:240px;}
+.hero-left{padding:2.5rem 2rem;border-right:var(--border);background:var(--bg);}
+.hero-right{position:relative;overflow:hidden;}
+.hero-h1{font-size:clamp(2.5rem,5vw,4rem);font-weight:900;line-height:0.9;letter-spacing:-0.04em;margin-bottom:0.75rem;color:var(--ink);}
+.hero-h1 span{display:inline-block;background-color:var(--red);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 3px,transparent 3px);background-size:10px 10px;color:#f5f0e8;padding:0 0.15em;}
+/* post list */
+.sec-horiz{padding:9px 1.5rem;font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--bg);background:var(--ink);border-bottom:var(--border);font-family:'JetBrains Mono',monospace;}
+.post-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:1.5rem;padding:1.1rem 1.5rem;border-bottom:1.5px solid var(--ink);cursor:pointer;transition:background 0.1s;background:var(--bg);}
+.post-row:hover{background:var(--bg2);}
+.post-t{font-size:0.95rem;font-weight:700;letter-spacing:-0.01em;color:var(--ink);}
+.post-summary{font-size:0.85rem;color:var(--ink3);margin-top:4px;line-height:1.5;}
+.post-meta{display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap;}
+.post-date{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--ink5);white-space:nowrap;}
+.post-read{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--ink5);white-space:nowrap;}
+/* year divider */
+.year-sep{padding:7px 1.5rem;font-family:'JetBrains Mono',monospace;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink5);border-bottom:1.5px solid var(--ink);background:var(--bg2);}
+/* == responsive == */
+html{background:#f5f0e8;}
+html.dark{background:#0f0c08;}
+body{max-width:1440px;margin:0 auto;}
+@media(max-width:960px){header{grid-template-columns:auto 1fr;}.h-sub{display:none;}}
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr;min-height:0;}
+  .hero-right{display:none;}
+}
+@media(max-width:640px){
+  header{display:flex;flex-wrap:wrap;}
+  .h-name{flex:0 0 100%;border-right:none;border-bottom:var(--border);padding:1rem 1.4rem;}
+  nav{flex:0 0 100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  nav::-webkit-scrollbar{display:none;}
+  nav a{height:44px;white-space:nowrap;flex-shrink:0;}
+  .dm-btn{flex-shrink:0;}
+  .post-row{grid-template-columns:1fr;gap:0.4rem;padding:0.9rem 1rem;}
+  .post-meta{justify-content:flex-start;}
+  .post-read{display:none;}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-name"><a href="index.html" style="color:inherit;text-decoration:none;">CouchSurfer.co.uk</a></div>
+  <div class="h-sub">Travel · Encryption · Running · Programing · Spain · Cyber · Building in public</div>
+  <nav>
+    <a href="projects.html" class="n1">Projects</a>
+    <a href="writing.html" class="n2">Writing</a>
+    <a href="now.html" class="n3">Now</a>
+    <!-- <a href="spain.html" class="n4">Spain</a> -->
+    <a href="about.html" class="n5">Contact</a>
+    <button class="dm-btn" id="dmb" onclick="toggleDark()">&#9680; Dark</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-left">
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink5);margin-bottom:1rem;">Writing</p>
+    <h1 class="hero-h1">Thinking<br>in <span>public.</span></h1>
+    <p style="font-size:0.9rem;line-height:1.75;color:var(--ink3);max-width:400px;margin-top:1rem;">Dispatches on AI tools, Python, UK open data, test data management, and the slow drift towards southern Spain. Not polished. Honest.</p>
+  </div>
+  <div class="hero-right">
+    <div class="bd-s" style="position:absolute;inset:0;"></div>
+    <svg viewBox="0 0 220 240" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%;">
+      <defs><pattern id="po" x="0" y="0" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1.3" fill="rgba(15,12,8,0.38)"/></pattern></defs>
+      <g transform="rotate(-2 100 80)"><rect x="30" y="30" width="120" height="80" fill="#d4943a" stroke="#0f0c08" stroke-width="3"/><rect x="30" y="30" width="120" height="80" fill="url(#po)"/></g>
+      <rect x="50" y="155" width="120" height="55" fill="#0f0c08" stroke="#f5f0e8" stroke-width="2" transform="rotate(1.5 110 182)"/>
+      <path d="M170 90 Q195 70 185 120" fill="none" stroke="#f5f0e8" stroke-width="2.5" stroke-linecap="round" opacity="0.35"/>
+      <path d="M20 140 Q50 125 60 155" fill="none" stroke="#f5f0e8" stroke-width="2" stroke-linecap="round" opacity="0.25"/>
+    </svg>
+  </div>
+</section>
+
+<div class="divider"><div class="bd-r"></div><div style="background:var(--chrome);"></div><div class="bd-o"></div><div class="bd-s"></div></div>
+
+<div class="year-sep">2023</div>
+<div class="post-row"><div><a href="https://community.opentext.com/cybersec/b/cybersecurity-blog/posts/excel-filters-for-the-fail" style="text-decoration:none;color:inherit;"><span class="post-t">Excel Filters for the Fail</span><div class="post-summary">Data breaches in UK police departments reveal the critical security mistake of relying on Excel filtering instead of proper data protection tools.</div></a></div><span class="post-meta"><span class="tag tag-r">Data Protection</span><span class="post-date">Aug 24, 2023</span></span></div>
+<div class="post-row"><div><a href="https://www.linkedin.com/pulse/quick-adventure-nlp-natural-language-processing-using-daniel-clift/?trackingId=JUbQbHIIZ3AJK99BH7cL3A%3D%3D" style="text-decoration:none;color:inherit;"><span class="post-t">A Quick Adventure in NLP using Python NLTK</span><div class="post-summary">Practical guide to using Python's NLTK library to identify and protect sensitive personal information in unstructured text.</div></a></div><span class="post-meta"><span class="tag tag-o">Python</span><span class="post-date">Oct 18, 2023</span></span></div>
+<div class="post-row"><div><a href="https://community.opentext.com/cybersec/b/cybersecurity-blog/posts/what-have-the-romans-done-for-us-an-overview-of-privacy-benefits" style="text-decoration:none;color:inherit;"><span class="post-t">What Have the Romans Done for Us? Privacy Benefits</span><div class="post-summary">Using Monty Python wit to explain eight organizational advantages of privacy compliance and regulations.</div></a></div><span class="post-meta"><span class="tag tag-g">Privacy</span><span class="post-date">Jun 6, 2023</span></span></div>
+<div class="year-sep">2022</div>
+<div class="post-row"><div><a href="https://community.opentext.com/cybersec/b/cybersecurity-blog/posts/twas-the-night-before-christmas-a-voltage-poem" style="text-decoration:none;color:inherit;"><span class="post-t">'Twas the Night Before Christmas: A Voltage Poem</span><div class="post-summary">A creative reimagining of the classic Christmas poem as a cybersecurity narrative featuring Format-Preserving Encryption as the hero.</div></a></div><span class="post-meta"><span class="tag tag-ink">Security</span><span class="post-date">Dec 11, 2022</span></span></div>
+<div class="post-row"><div><a href="https://community.opentext.com/cybersec/b/cybersecurity-blog/posts/what-happens-in-10-months-in-voltage" style="text-decoration:none;color:inherit;"><span class="post-t">What Happens in 10 Months in Voltage</span><div class="post-summary">Interview exploring a sales engineer's accomplishments in data discovery, customer successes across Greece, Turkey, and Cyprus, and the challenge of unstructured file discovery.</div></a></div><span class="post-meta"><span class="tag tag-s">Data Privacy</span><span class="post-date">Oct 13, 2022</span></span></div>
+<div class="post-row"><div><a href="https://community.opentext.com/cybersec/b/cybersecurity-blog/posts/digital-data-hoarding" style="text-decoration:none;color:inherit;"><span class="post-t">Digital Data Hoarding</span><div class="post-summary">Organizations accumulate data like personal hoarders, creating liability instead of value. Exploring why digital minimalism matters for efficiency and compliance.</div></a></div><span class="post-meta"><span class="tag tag-o">Data Management</span><span class="post-date">May 23, 2022</span></span></div>
+<div class="year-sep">2021</div>
+<div class="post-row" style="border-bottom:none;"><div><a href="https://community.opentext.com/cybersec/b/cybersecurity-blog/posts/it-s-ten-pm-do-you-know-where-your-children-are" style="text-decoration:none;color:inherit;"><span class="post-t">It's Ten PM, Do You Know Where Your Children Are?</span><div class="post-summary">Adapting the classic PSA to a modern question: Do you know where your data is? Why a data-centric approach matters for organizations facing privacy regulation and cloud adoption.</div></a></div><span class="post-meta"><span class="tag tag-g">Data Security</span><span class="post-date">Apr 18, 2021</span></span></div></div>
+
+<div class="divider"><div class="bd-g"></div><div style="background:var(--chrome);"></div><div class="bd-r"></div><div class="bd-o"></div></div>
+<footer>
+  <div>
+    <div class="f-name">Daniel Clift</div>
+    <div class="f-meta">Inspired by <span class="f-links"><a href="https://en.wikipedia.org/wiki/Brutalist_architecture">Brutalism</a>, <a href="https://en.wikipedia.org/wiki/Abstract_expressionism">Abstract expressionism</a>, <a href="https://en.wikipedia.org/wiki/Pop_art">Pop art</a></span> · 2026</div>
+  </div>
+  <div class="f-links"><a href="https://github.com/moomindc?tab=repositories">GitHub</a><a href="https://www.linkedin.com/in/danielclift/">LinkedIn</a><a href="mailto:dan@couchsurfer.co.uk">Email</a></div>
+</footer>
+<script>function toggleDark(){const d=document.body.classList.toggle('dark');document.documentElement.classList.toggle('dark',d);document.getElementById('dmb').textContent=d?'◑ Light':'◐ Dark';}</script>
+</body>
+</html>
