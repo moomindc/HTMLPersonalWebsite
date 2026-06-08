@@ -158,6 +158,7 @@ body{max-width:1440px;margin:0 auto;}
   <div class="f-links"><a href="https://github.com/moomindc?tab=repositories">GitHub</a><a href="https://www.linkedin.com/in/danielclift/">LinkedIn</a><a href="mailto:dan@couchsurfer.co.uk">Email</a></div>
 </footer>
 
+<script src="now-data.js"></script>
 <script>
 function toggleDark(){const d=document.body.classList.toggle('dark');document.documentElement.classList.toggle('dark',d);document.getElementById('dmb').textContent=d?'◑ Light':'◐ Dark';}
 
@@ -171,7 +172,18 @@ function toggleDark(){const d=document.body.classList.toggle('dark');document.do
 
   function shiftMonth(month,year,delta){let m=month+delta,y=year;while(m<0){m+=12;y--;}while(m>11){m-=12;y++;}return{month:m,year:y};}
 
-  function archiveFilename(month,year){return`now-${year}-${String(month+1).padStart(2,'0')}.json`;}
+  function archiveFilename(month,year){return`now-data-${year}-${String(month+1).padStart(2,'0')}.js`;}
+
+  function loadScript(src){
+    return new Promise(resolve=>{
+      delete window._nowTemp;
+      const s=document.createElement('script');
+      s.src=src;
+      s.onload=()=>resolve(window._nowTemp||null);
+      s.onerror=()=>resolve(null);
+      document.head.appendChild(s);
+    });
+  }
 
   function buildCards(items){
     const row=document.createElement('div');
@@ -225,32 +237,21 @@ function toggleDark(){const d=document.body.classList.toggle('dark');document.do
   }
 
   async function init(){
-    const el=document.getElementById('now-current');
-    try{
-      const res=await fetch('now.json');
-      if(!res.ok)throw new Error();
-      const data=await res.json();
-      renderCurrent(data);
-
-      const{month,year}=parseMonthYear(data.month);
-      const prevMonths=[];
-      for(let i=1;i<=4;i++){
-        const mv=shiftMonth(month,year,-i);
-        prevMonths.push({...mv,filename:archiveFilename(mv.month,mv.year)});
-      }
-
-      const results=await Promise.allSettled(
-        prevMonths.map(({filename})=>fetch(filename).then(r=>r.ok?r.json():Promise.reject()))
-      );
-
-      const entries=prevMonths
-        .map(({month,year},i)=>({month,year,data:results[i].status==='fulfilled'?results[i].value:null}))
-        .filter(e=>e.data!==null);
-
-      renderArchive(entries);
-    }catch(e){
-      el.innerHTML='<p style="color:var(--ink4);padding:1rem;font-family:JetBrains Mono,monospace;font-size:0.75rem">Failed to load content — open via a web server, not file://</p>';
+    const data=window._nowTemp;
+    if(!data){
+      document.getElementById('now-current').innerHTML='<p style="color:var(--ink4);padding:1rem;font-family:JetBrains Mono,monospace;font-size:0.75rem">now-data.js not found.</p>';
+      return;
     }
+    renderCurrent(data);
+
+    const{month,year}=parseMonthYear(data.month);
+    const entries=[];
+    for(let i=1;i<=4;i++){
+      const mv=shiftMonth(month,year,-i);
+      const d=await loadScript(archiveFilename(mv.month,mv.year));
+      if(d)entries.push({month:mv.month,year:mv.year,data:d});
+    }
+    renderArchive(entries);
   }
 
   init();
