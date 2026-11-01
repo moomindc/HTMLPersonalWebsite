@@ -7,8 +7,18 @@
   "status": "complete",
   "featured": 1,
   "links": [
-    { "label": "Download project", "url": "https://pub-98806ba3606e4c95b96554ebbdf892ca.r2.dev/ClipMonster-1.0-win64.zip" },
-    { "label": "SHA 256 checksum", "url": "downloads/ClipMonster-1.0-win64.zip.sha256" }
+    {
+      "label": "Project page",
+      "url": "clipmonster/index.html"
+    },
+    {
+      "label": "Download project",
+      "url": "https://pub-98806ba3606e4c95b96554ebbdf892ca.r2.dev/ClipMonster-1.0-win64.zip"
+    },
+    {
+      "label": "SHA 256 checksum",
+      "url": "downloads/ClipMonster-1.0-win64.zip.sha256"
+    }
   ],
   "image": {
     "file": "clipmonster.gif",

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ClipMonster — CouchSurfer.co.uk</title>
+<meta name="description" content="ClipMonster: a Windows clipboard manager with searchable history, OCR, scrolling screen capture, an annotation editor, a colour picker and readable actions. No account, no telemetry, no network calls.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0f0c08;--ink2:#333;--ink3:#444;--ink4:#666;--ink5:#888;--bg:#f5f0e8;--bg2:#e8e0d0;--red:#c0392b;--ochre:#d4943a;--slate:#2c4a6e;--sage:#4a6741;--border:3px solid var(--ink);--shadow:5px 5px 0 var(--ink);--shadow-lg:8px 8px 0 var(--ink);--chrome:#1a1510;--chrome-t:#c8c0b0;}
+.dark{--ink:#f5f0e8;--ink2:#ccc;--ink3:#bbb;--ink4:#999;--ink5:#777;--bg:#0f0c08;--bg2:#1a1510;--border:3px solid #f5f0e8;--shadow:5px 5px 0 #f5f0e8;--shadow-lg:8px 8px 0 #f5f0e8;--chrome:#000000;--chrome-t:#a09880;}
+html{background:#f5f0e8;scroll-behavior:smooth;}
+html.dark{background:#0f0c08;}
+body{background:var(--bg);color:var(--ink);font-family:'Space Grotesk',sans-serif;transition:background 0.2s,color 0.2s;max-width:1440px;margin:0 auto;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:inherit;}
+code,kbd{font-family:'JetBrains Mono',monospace;font-size:0.85em;}
+code{background:var(--bg2);border:1px solid var(--ink4);padding:1px 5px;}
+.bd-o{background-color:var(--ochre);background-image:radial-gradient(circle,rgba(15,12,8,0.4) 1.4px,transparent 1.4px);background-size:7px 7px;}
+.bd-r{background-color:var(--red);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 3px,transparent 3px);background-size:10px 10px;}
+.bd-s{background-color:var(--slate);background-image:radial-gradient(circle,rgba(255,255,255,0.2) 1.3px,transparent 1.3px);background-size:7px 7px;}
+.bd-g{background-color:var(--sage);background-image:radial-gradient(circle,rgba(255,255,255,0.18) 1.2px,transparent 1.2px);background-size:6px 6px;}
+/* nav */
+header{border-bottom:var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;min-height:64px;background:var(--bg);}
+.h-name{font-size:1.3rem;font-weight:900;letter-spacing:-0.03em;padding:0 1.4rem;border-right:var(--border);display:flex;align-items:center;background:var(--ink);color:var(--bg);}
+.h-name a{color:inherit;text-decoration:none;}
+.h-sub{display:flex;align-items:center;padding:0 1.4rem;font-size:0.75rem;color:var(--ink4);font-family:'JetBrains Mono',monospace;letter-spacing:0.02em;border-right:var(--border);}
+nav{display:flex;}
+nav a{display:flex;align-items:center;height:100%;padding:0 1.1rem;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:var(--ink);border-right:var(--border);transition:opacity 0.1s;}
+nav a:hover{opacity:0.72;}
+nav a.n1{background-color:var(--ochre);background-image:radial-gradient(circle,rgba(15,12,8,0.4) 1.4px,transparent 1.4px);background-size:7px 7px;color:#0f0c08;}
+nav a.n2{background-color:var(--red);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 3px,transparent 3px);background-size:10px 10px;color:#f5f0e8;}
+nav a.n3{background-color:var(--slate);background-image:radial-gradient(circle,rgba(255,255,255,0.2) 1.3px,transparent 1.3px);background-size:7px 7px;color:#f5f0e8;}
+nav a.n5{background:var(--ink);color:var(--bg);}
+.dm-btn{display:flex;align-items:center;height:100%;padding:0 1rem;font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:transparent;border:none;border-left:var(--border);color:var(--ink);cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:background 0.1s,color 0.1s;}
+.dm-btn:hover{background:var(--ink);color:var(--bg);}
+/* sub nav */
+.subnav{display:flex;overflow-x:auto;border-bottom:var(--border);background:var(--bg2);font-family:'JetBrains Mono',monospace;font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;scrollbar-width:none;}
+.subnav::-webkit-scrollbar{display:none;}
+.subnav a{padding:10px 16px;text-decoration:none;white-space:nowrap;border-right:2px solid var(--ink);color:var(--ink);}
+.subnav a:hover{background:var(--ink);color:var(--bg);}
+/* buttons + tags */
+.btn{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:10px 18px;border:var(--border);box-shadow:var(--shadow);cursor:pointer;text-decoration:none;display:inline-block;transition:transform 0.1s,box-shadow 0.1s;background:var(--bg);color:var(--ink);}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-lg);}
+.btn:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink);}
+.btn-fill{background:var(--ink);color:var(--bg);}
+.btn-fill:hover{background:var(--red);color:#f5f0e8;border-color:var(--red);}
+.btns{display:flex;flex-wrap:wrap;gap:14px;margin-top:1.6rem;}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;padding:2px 8px;border:2px solid var(--ink);}
+.tag-o{background:var(--ochre);color:#0f0c08;}.tag-s{background:var(--slate);color:#f5f0e8;}.tag-r{background:var(--red);color:#f5f0e8;}.tag-g{background:var(--sage);color:#f5f0e8;}
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 1fr;border-bottom:var(--border);}
+.hero-left{padding:2.75rem 2.5rem;border-right:var(--border);}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink5);margin-bottom:1.2rem;}
+.hero-h1{font-size:clamp(2.4rem,5vw,4.2rem);font-weight:900;line-height:0.95;letter-spacing:-0.04em;margin-bottom:1.25rem;}
+.hero-mark{display:inline-block;background-color:var(--ochre);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 1.3px,transparent 1.3px);background-size:6px 6px;border:var(--border);padding:0 0.2em;box-shadow:var(--shadow);color:#0f0c08;}
+.hero-body{font-size:1rem;line-height:1.75;color:var(--ink3);max-width:520px;border-left:4px solid var(--ink);padding-left:1rem;}
+.hero-right{background:var(--bg2);display:flex;align-items:center;justify-content:center;padding:2rem;position:relative;overflow:hidden;}
+.hero-right::before{content:"";position:absolute;inset:0;opacity:.5;background-image:radial-gradient(circle,rgba(15,12,8,0.18) 1.4px,transparent 1.4px);background-size:9px 9px;}
+.shot{position:relative;display:block;max-width:100%;height:auto;border:var(--border);box-shadow:var(--shadow-lg);background:#fff;}
+.logo{position:absolute;top:14px;right:14px;width:64px;height:64px;border:var(--border);background:var(--bg);box-shadow:3px 3px 0 var(--ink);z-index:2;}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:var(--border);}
+.stat{padding:1.3rem 1.2rem;border-right:var(--border);text-align:center;}
+.stat:last-child{border-right:none;}
+.stat b{display:block;font-size:2.1rem;font-weight:900;letter-spacing:-0.04em;line-height:1;}
+.stat span{font-family:'JetBrains Mono',monospace;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink4);display:block;margin-top:6px;}
+/* flow */
+.flow{display:flex;align-items:center;padding:1rem 1.5rem;border-bottom:var(--border);background:var(--bg2);overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.7rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}
+.flow span{white-space:nowrap;}
+.flow .node{border:2px solid var(--ink);padding:4px 10px;background:var(--bg);}
+.flow .arrow{padding:0 10px;color:var(--ink4);}
+/* section scaffolding */
+.sec-head{padding:2.2rem 2.5rem 0;}
+.cell-label{font-family:'JetBrains Mono',monospace;font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink5);margin-bottom:0.6rem;}
+h2{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:900;letter-spacing:-0.03em;line-height:1.05;margin-bottom:.7rem;}
+h3{font-size:1.2rem;font-weight:900;letter-spacing:-0.02em;margin-bottom:.5rem;}
+p{font-size:0.92rem;line-height:1.7;color:var(--ink3);}
+p+p{margin-top:.8rem;}
+section{border-bottom:var(--border);}
+/* feature rows */
+.feat{display:grid;grid-template-columns:1fr 1fr;border-bottom:var(--border);}
+.feat:last-of-type{border-bottom:none;}
+.feat-text{padding:2.4rem 2.5rem;position:relative;overflow:hidden;}
+.feat-img{padding:2rem;display:flex;align-items:center;justify-content:center;background:var(--bg2);border-left:var(--border);}
+.feat.flip .feat-text{order:2;}
+.feat.flip .feat-img{order:1;border-left:none;border-right:var(--border);}
+.feat-num{position:absolute;top:8px;right:14px;font-family:'JetBrains Mono',monospace;font-size:3rem;font-weight:700;opacity:.1;line-height:1;}
+.feat ul{margin:.9rem 0 0 1.1rem;font-size:0.9rem;line-height:1.7;color:var(--ink3);}
+.feat li{margin-bottom:.35rem;}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:1rem;}
+.pill{font-family:'JetBrains Mono',monospace;font-size:0.68rem;font-weight:700;border:2px solid var(--ink);padding:3px 8px;background:var(--bg);}
+.callout{margin-top:1.1rem;border:var(--border);box-shadow:var(--shadow);padding:.9rem 1.1rem;background:var(--bg2);}
+.callout b{font-weight:900;}
+.callout p{font-size:.85rem;}
+/* card grids */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);margin-top:1.8rem;border-top:var(--border);}
+.grid.g2{grid-template-columns:repeat(2,1fr);}
+.grid.g4{grid-template-columns:repeat(4,1fr);}
+.cell{border-right:var(--border);border-bottom:var(--border);padding:1.5rem;position:relative;overflow:hidden;}
+.grid.g3 .cell:nth-child(3n),.grid:not(.g2):not(.g4) .cell:nth-child(3n){border-right:none;}
+.grid.g2 .cell:nth-child(2n){border-right:none;}
+.grid.g4 .cell:nth-child(4n){border-right:none;}
+.grid .cell:nth-last-child(-n+1){}
+.cell p{font-size:.84rem;line-height:1.6;}
+.corner-tri{position:absolute;bottom:-1px;right:-1px;width:38px;height:38px;clip-path:polygon(100% 0,100% 100%,0 100%);}
+/* tables */
+.tbl-wrap{overflow-x:auto;margin:1.5rem 2.5rem 2.2rem;border:var(--border);box-shadow:var(--shadow);}
+table{border-collapse:collapse;width:100%;font-size:.85rem;background:var(--bg);}
+th,td{text-align:left;padding:10px 14px;border-bottom:2px solid var(--ink);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+th{background:var(--ink);color:var(--bg);font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;}
+td:first-child{white-space:nowrap;font-weight:700;}
+kbd{border:2px solid var(--ink);padding:1px 6px;background:var(--bg2);white-space:nowrap;font-weight:700;}
+/* terminal */
+.term{margin:1.5rem 2.5rem 0;background:#0f0c08;color:#e8e0d0;border:var(--border);box-shadow:var(--shadow);font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.7;padding:1rem 1.2rem;overflow-x:auto;white-space:pre;}
+.dark .term{background:#000;}
+.term .c{color:#8a8070;}
+.pad{padding:0 2.5rem 2.2rem;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.two>div{padding:2.2rem 2.5rem;}
+.two>div:first-child{border-right:var(--border);}
+.layers{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700;margin-top:1rem;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.layers span.n{border:2px solid var(--ink);padding:4px 10px;background:var(--bg);}
+.roadmap{display:grid;grid-template-columns:auto 1fr;}
+.roadmap>*{padding:11px 16px;border-bottom:2px solid var(--ink);font-size:.86rem;}
+.roadmap>.k{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.72rem;border-right:2px solid var(--ink);white-space:nowrap;}
+.roadmap>:nth-last-child(-n+2){border-bottom:none;}
+.issues{list-style:none;margin:0;}
+.issues li{padding:.8rem 0;border-bottom:2px dotted var(--ink4);font-size:.88rem;line-height:1.6;color:var(--ink3);}
+.issues li:last-child{border-bottom:none;}
+.issues b{color:var(--ink);}
+/* download band */
+.dl{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;padding:2.6rem 2.5rem;background:var(--red);background-image:radial-gradient(circle,rgba(15,12,8,0.3) 3px,transparent 3px);background-size:12px 12px;border-bottom:var(--border);color:#f5f0e8;}
+.dl h2{color:#f5f0e8;margin-bottom:.4rem;}
+.dl p{color:#f5f0e8;max-width:560px;}
+.dl .hash{font-family:'JetBrains Mono',monospace;font-size:.62rem;word-break:break-all;margin-top:.8rem;opacity:.9;max-width:560px;}
+.dl .btn{background:#f5f0e8;color:#0f0c08;border-color:#0f0c08;box-shadow:5px 5px 0 #0f0c08;}
+.dl .btn:hover{background:#0f0c08;color:#f5f0e8;}
+/* divider + footer */
+.divider{display:grid;grid-template-columns:3fr 2fr 1fr 2fr;height:12px;border-top:3px solid var(--chrome);border-bottom:3px solid var(--chrome);}
+.divider div{border-right:2px solid var(--chrome);}.divider div:last-child{border-right:none;}
+footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding:1.25rem 1.5rem;background:var(--chrome);}
+.dark footer{background:#0f0c08;}
+.f-name{font-size:0.95rem;font-weight:900;letter-spacing:-0.02em;color:var(--chrome-t);}
+.f-meta{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#777;margin-top:2px;}
+.f-links{display:flex;gap:12px;}
+.f-links a{font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#777;text-decoration:none;}
+.f-links a:hover{color:var(--ochre);}
+/* responsive */
+@media(max-width:960px){header{grid-template-columns:auto 1fr;}.h-sub{display:none;}.grid.g4{grid-template-columns:repeat(2,1fr);}.grid.g4 .cell:nth-child(4n){border-right:var(--border);}.grid.g4 .cell:nth-child(2n){border-right:none;}}
+@media(max-width:820px){
+  .hero,.feat,.two{grid-template-columns:1fr;}
+  .hero-left{border-right:none;border-bottom:var(--border);padding:2rem 1.4rem;}
+  .feat-img,.feat.flip .feat-img{order:2;border-left:none;border-right:none;border-top:var(--border);}
+  .feat.flip .feat-text{order:1;}
+  .feat-text,.sec-head,.two>div{padding-left:1.4rem;padding-right:1.4rem;}
+  .two>div:first-child{border-right:none;border-bottom:var(--border);}
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .stat{border-bottom:var(--border);}
+  .stat:nth-child(2n){border-right:none;}
+  .stat:last-child{border-bottom:none;}
+  .grid,.grid.g2{grid-template-columns:1fr;}
+  .grid .cell,.grid.g2 .cell,.grid.g4 .cell{border-right:none!important;}
+  .grid.g4{grid-template-columns:1fr;}
+  .tbl-wrap,.term{margin-left:1.4rem;margin-right:1.4rem;}
+  .pad{padding-left:1.4rem;padding-right:1.4rem;}
+  .dl{grid-template-columns:1fr;padding:2rem 1.4rem;}
+}
+@media(max-width:640px){
+  header{display:flex;flex-wrap:wrap;}
+  .h-name{flex:0 0 100%;border-right:none;border-bottom:var(--border);padding:1rem 1.4rem;}
+  nav{flex:0 0 100%;overflow-x:auto;scrollbar-width:none;}
+  nav::-webkit-scrollbar{display:none;}
+  nav a{height:44px;white-space:nowrap;flex-shrink:0;}
+  .dm-btn{flex-shrink:0;}
+  .hero-h1{font-size:clamp(1.9rem,9vw,2.6rem);}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-name"><a href="../index.html">CouchSurfer.co.uk</a></div>
+  <div class="h-sub">Travel · Encryption · Running · Programing · Spain · Cyber · Building in public</div>
+  <nav>
+    <a href="../projects.html" class="n1">Projects</a>
+    <a href="../writing.html" class="n2">Writing</a>
+    <a href="../about.html" class="n5">Contact</a>
+    <button class="dm-btn" id="dmb" onclick="toggleDark()">&#9680; Dark</button>
+  </nav>
+</header>
+
+<div class="subnav">
+  <a href="#history">History</a><a href="#capture">Capture</a><a href="#actions">Actions</a><a href="#library">Library</a><a href="#keys">Keys</a><a href="#privacy">Privacy</a><a href="#start">Get it</a>
+</div>
+
+<section class="hero" style="border-bottom:var(--border);">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Windows · Python · PySide6 · v1.0 · 2026</p>
+    <h1 class="hero-h1">Copy it once.<br><span class="hero-mark">Find it forever.</span></h1>
+    <p class="hero-body">A clipboard manager that remembers everything you copy, finds it again, and gets out of the way. With screen capture, a real annotation editor, a colour picker, and an action system you can read and change.</p>
+    <div class="btns">
+      <a href="#start" class="btn btn-fill">Download for Windows →</a>
+    </div>
+    <div class="pills">
+      <span class="tag tag-o">Windows 10/11</span><span class="tag tag-s">Python 3.12+</span><span class="tag tag-r">Free</span>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img src="images/logo.gif" class="logo" alt="ClipMonster logo">
+    <img class="shot" src="images/demo.gif" alt="ClipMonster: the popup, searching clip history, the command palette, and the annotation editor">
+  </div>
+</section>
+
+<div class="stats" style="grid-template-columns:repeat(3,1fr);">
+  <div class="stat"><b>16</b><span>annotation tools</span></div>
+  <div class="stat"><b>17</b><span>readable actions</span></div>
+  <div class="stat"><b>4</b><span>capture modes</span></div>
+</div>
+
+<div class="flow">
+  <span class="node">Copy</span><span class="arrow">→</span>
+  <span class="node">Typed &amp; stored</span><span class="arrow">→</span>
+  <span class="node">OCR'd</span><span class="arrow">→</span>
+  <span class="node">Ctrl+`</span><span class="arrow">→</span>
+  <span class="node">Search</span><span class="arrow">→</span>
+  <span class="node">Paste what the app wants</span>
+</div>
+
+<!-- HISTORY -->
+<section id="history">
+  <div class="sec-head"><p class="cell-label">01 · Remember</p><h2>Your clipboard history, searchable</h2></div>
+  <div class="feat" style="margin-top:1.6rem;border-top:var(--border);">
+    <div class="feat-text">
+      <div class="corner-tri bd-o"></div>
+      <p>One hotkey brings up everything you have copied, newest first, right where the cursor is. Every clip is <b>typed</b> as it arrives and searchable word by word.</p>
+      <div class="pills">
+        <span class="pill">text</span><span class="pill">code</span><span class="pill">JSON</span><span class="pill">XML</span><span class="pill">URLs</span><span class="pill">emails</span><span class="pill">paths</span><span class="pill">colours</span><span class="pill">JWTs</span><span class="pill">numbers</span><span class="pill">dates</span><span class="pill">tables</span><span class="pill">images</span><span class="pill">file lists</span>
+      </div>
+      <h3 style="margin-top:1.6rem;">Filters that narrow it fast</h3>
+      <div class="pills">
+        <span class="pill">app:chrome</span><span class="pill">type:image</span><span class="pill">in:"work"</span><span class="pill">tag:invoice</span><span class="pill">is:pinned</span><span class="pill">is:capture</span>
+      </div>
+      <p style="margin-top:1rem;">Pin what you keep coming back to and it stays at the top, exempt from the retention sweep.</p>
+      <div class="callout"><b>Screenshots are searchable too.</b>
+        <p>Images are read with OCR in the background, so typing <code>invoice</code> finds the picture of one. A capture also wears the icon of the app it is a picture of, so a row tells you where it came from at a glance.</p></div>
+    </div>
+    <div class="feat-img"><img class="shot" src="images/popup-search.png" alt="The popup, filtered to three clips by the word 'invoice'"></div>
+  </div>
+</section>
+
+<!-- CAPTURE -->
+<section id="capture">
+  <div class="sec-head"><p class="cell-label">02 · Capture</p><h2>Capture and mark up</h2></div>
+  <div class="feat" style="margin-top:1.6rem;border-top:var(--border);">
+    <div class="feat-img" style="order:1;border-left:none;border-right:var(--border);"><img class="shot" src="images/annotate.png" alt="The annotation editor: a blurred account number, a highlighted row, an arrow and a step badge"></div>
+    <div class="feat-text" style="order:2;">
+      <div class="corner-tri bd-s"></div>
+      <p>Region, window, whole screen — or <b>scrolling</b>: hover to highlight the pane you want, click, and ClipMonster drives that window's own scrollbar and stitches the frames into one picture taller than the screen. It measures from the pixels how far each scroll actually moved, and stops rather than guessing when it cannot tell. All DPI-correct across mixed-scale monitors.</p>
+      <h3 style="margin-top:1.4rem;">Sixteen annotation tools</h3>
+      <div class="pills">
+        <span class="pill">arrows</span><span class="pill">boxes</span><span class="pill">ellipses</span><span class="pill">lines</span><span class="pill">pen</span><span class="pill">highlighter</span><span class="pill">text</span><span class="pill">callouts</span><span class="pill">step badges</span><span class="pill">stickers</span><span class="pill">magnifier</span><span class="pill">blur</span><span class="pill">pixelate</span><span class="pill">solid redaction</span><span class="pill">magic wand</span><span class="pill">edge effects</span><span class="pill">crop</span>
+      </div>
+      <p style="margin-top:1rem;">The result stays <b>re-editable</b>: reopen the clip later and every arrow is still an object you can move, restyle or delete.</p>
+      <div class="callout"><b>Redaction that means it.</b>
+        <p>A blur is flattened into the pixels and the original pixels are gone from the new clip. ClipMonster offers to delete the un-redacted original it came from, so moving the blur later uncovers nothing.</p></div>
+    </div>
+  </div>
+  <div class="pad" style="padding-top:1.6rem;"><p>Capture works four ways: <b>region</b> (drag a rectangle anywhere on screen), <b>window</b> (hover to highlight, click to grab it), <b>screen</b> (the whole monitor, correctly scaled) and <b>scrolling</b> (stitches a whole page into one tall image). Press <kbd>R</kbd>, <kbd>W</kbd>, <kbd>S</kbd> or <kbd>L</kbd> after the capture hotkey.</p></div>
+</section>
+
+<!-- ACTIONS -->
+<section id="actions">
+  <div class="sec-head"><p class="cell-label">03 · Transform</p><h2>Actions you can actually read</h2></div>
+  <div class="feat" style="margin-top:1.6rem;border-top:var(--border);">
+    <div class="feat-text">
+      <div class="corner-tri bd-g"></div>
+      <p>Every action is a <code>.toml</code> plus a script in <code>%LOCALAPPDATA%\ClipMonster\ClipMonster\actions</code>. Seventeen ship with it, one script per action, all yours to edit.</p>
+      <p>Run them from the command palette (<kbd>Ctrl+K</kbd>), or let them run by themselves on copy, paste, capture or colour once you switch that on.</p>
+      <ul>
+        <li>They run <b>out of process</b> with a timeout and a process-tree kill.</li>
+        <li>Whatever an action produces is <b>linked back</b> to the clip it came from.</li>
+        <li>The Library shows you the chain and can replay it on something else.</li>
+      </ul>
+      <div class="pills">
+        <span class="pill">upper</span><span class="pill">lower</span><span class="pill">title case</span><span class="pill">trim</span><span class="pill">collapse whitespace</span><span class="pill">strip trailing newline</span><span class="pill">URL encode / decode</span><span class="pill">base64 encode / decode</span><span class="pill">JSON pretty / minify</span><span class="pill">table → TSV</span><span class="pill">table → CSV</span><span class="pill">table → Markdown</span><span class="pill">search the web</span><span class="pill">open link</span>
+      </div>
+    </div>
+    <div class="feat-img"><img class="shot" src="images/popup-actions.png" alt="The command palette open over the popup, listing the actions that apply to a URL"></div>
+  </div>
+  <div class="two" style="border-top:var(--border);">
+    <div>
+      <p class="cell-label">Paste rules</p><h3>Paste what the target app actually wants</h3>
+      <p>Paste rules turn the same clip into plain text for a terminal and a TSV table for Excel, without storing anything extra. The popup's footer tells you which rule will apply before you press Enter.</p>
+    </div>
+    <div>
+      <p class="cell-label">Colour picker</p><h3>Pick a colour from anywhere</h3>
+      <p>Press <kbd>Ctrl+Shift+Alt+C</kbd>, click a pixel, and the colour lands in your history — typed as a colour, searchable, and available to actions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LIBRARY -->
+<section id="library">
+  <div class="sec-head"><p class="cell-label">04 · Organise</p><h2>A library for everything else</h2>
+    <p style="max-width:700px;">Folders, tags, full metadata, and the image tools — crop, annotate, save as a file — on whichever clip you have selected.</p></div>
+  <div class="grid">
+    <div class="cell"><div class="corner-tri bd-o"></div><h3>Folders &amp; tags</h3><p>File clips away with <code>in:"work"</code> and <code>tag:invoice</code>, then pull them back with the same filters.</p></div>
+    <div class="cell"><div class="corner-tri bd-s"></div><h3>Lineage</h3><p>See what a clip was made from and by which action — and replay the chain on something else.</p></div>
+    <div class="cell"><div class="corner-tri bd-r"></div><h3>Actions log</h3><p>A record of every action that ran, what it ran on, and what it produced.</p></div>
+  </div>
+</section>
+
+<!-- KEYS -->
+<section id="keys">
+  <div class="sec-head"><p class="cell-label">05 · Muscle memory</p><h2>The keys</h2>
+    <p>All rebindable in Settings. Win+V is reserved by Windows; Settings → Hotkeys → Windows shortcuts can free it.</p></div>
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>Key</th><th>Does</th></tr>
+      <tr><td><kbd>Ctrl+`</kbd></td><td>Open the popup</td></tr>
+      <tr><td><kbd>Enter</kbd> / click</td><td>Paste · <kbd>Shift+Enter</kbd> plain text · <kbd>Alt+Enter</kbd> ignore paste rules</td></tr>
+      <tr><td><kbd>1</kbd>–<kbd>9</kbd></td><td>Paste that clip straight away</td></tr>
+      <tr><td><kbd>Ctrl+K</kbd></td><td>Command palette (actions for the selected clip)</td></tr>
+      <tr><td><kbd>Ctrl+E</kbd> · <kbd>Ctrl+P</kbd> · <kbd>Del</kbd></td><td>Edit in the library · pin · delete</td></tr>
+      <tr><td><kbd>Ctrl+Shift+Alt+R</kbd></td><td>Capture — then <kbd>R</kbd>, <kbd>W</kbd>, <kbd>S</kbd> or <kbd>L</kbd> for region, window, screen or scrolling</td></tr>
+      <tr><td><kbd>Ctrl+Shift+Alt+C</kbd></td><td>Pick a colour from the screen</td></tr>
+      <tr><td><kbd>Ctrl+Shift+Alt+A</kbd></td><td>Annotate the image on the clipboard</td></tr>
+      <tr><td><kbd>Ctrl+Shift+Alt+P</kbd></td><td>Pause and resume monitoring</td></tr>
+    </table>
+  </div>
+  <p class="pad">A chord another application has already claimed — Win+Shift+S, say — can be taken too, but only if you switch that on and accept what it costs.</p>
+</section>
+
+<!-- PRIVACY -->
+<section id="privacy">
+  <div class="sec-head"><p class="cell-label">06 · Trust</p><h2>Privacy, held to a standard</h2>
+    <p style="max-width:720px;">Everything stays on your machine. No account, no telemetry, no network calls at all. Two requirements the code is held to — not a promise on a marketing page.</p></div>
+  <div class="grid g2">
+    <div class="cell"><div class="corner-tri bd-g"></div><p class="cell-label">NFR-PRIV-1</p><h3>Clip contents never reach the log</h3><p>Not at debug level, not in an exception. Logs carry ids, sizes and types.</p></div>
+    <div class="cell"><div class="corner-tri bd-g"></div><p class="cell-label">NFR-PRIV-2</p><h3>No network calls</h3><p>No updater, no telemetry, no crash reporter, no sync. The only thing that leaves the machine is what you paste somewhere yourself, or a web search you explicitly ask an action to run.</p></div>
+  </div>
+  <div class="pad" style="padding-top:1.8rem;">
+    <p>The one mechanism that could be read as a keylogger — the optional low-level keyboard hook that takes a chord another app owns — is <b>off unless you turn it on</b>, reads nothing but the key code it is matching against your own bindings, and says so in Settings before you agree to it.</p>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<div class="dl" id="start">
+  <div>
+    <p class="cell-label" style="color:#f5f0e8;opacity:.8;">07 · Get it</p>
+    <h2>ClipMonster 1.0 for Windows</h2>
+    <p>A zip of a one-dir bundle: unzip it anywhere and run <b>ClipMonster.exe</b>. No Python needed.</p>
+    <p class="hash">SHA-256: 187d2c9bca48a115ed5cf1f9d73f9b41c54a3e8869dd216bdf3675e87ca5b163</p>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:14px;">
+    <a class="btn" href="https://pub-98806ba3606e4c95b96554ebbdf892ca.r2.dev/ClipMonster-1.0-win64.zip" rel="noopener noreferrer">Download .zip →</a>
+    <a class="btn" href="../downloads/ClipMonster-1.0-win64.zip.sha256">Checksum file</a>
+  </div>
+</div>
+
+<section>
+  <div class="two" style="grid-template-columns:1fr;">
+    <div>
+      <p class="cell-label">First run</p><h3>SmartScreen will complain</h3>
+      <p>It is not code-signed, so Windows SmartScreen may say it "protected your PC" the first time. Choose <b>More info → Run anyway</b>; the warning is about the missing signature, not about what the program does.</p>
+      <p>A tray icon appears — possibly in the hidden-icons overflow — with Show popup, Open history, Capture, Pick colour, Pause monitoring, Settings and Quit.</p>
+    </div>
+  </div>
+  <div class="pad" style="border-top:var(--border);padding-top:1.6rem;">
+    <h3>Where things live</h3>
+    <p>History and blobs in <code>%LOCALAPPDATA%\ClipMonster\ClipMonster</code>, settings in <code>config.toml</code> beside them, your actions in <code>actions\</code> and your stickers in <code>stickers\</code>. All hand-editable.</p>
+    <p><b>Backing up:</b> there is no backup command yet (planned for 1.1). Quit ClipMonster, then copy the whole folder; copying it back restores your history.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><p class="cell-label">Enjoying it?</p><h2>Tell a friend. Or buy me tea and biscuits.</h2></div>
+  <div class="pad" style="padding-top:1rem;max-width:820px;">
+    <p>ClipMonster is free and I wrote it mostly to see whether I could get a bit internet famous. So the best thing you can do is <b>tell a friend, a colleague or the internet</b> about it: share the link or post a screenshot. That is worth far more to me than money.</p>
+    <p>If it has saved you time and you would like to say thanks with something small, a donation towards tea and biscuits is very welcome. It is entirely optional, and nothing in the program depends on it.</p>
+    <div class="btns"><a class="btn btn-fill" href="https://paypal.me/danclift" rel="noopener noreferrer">paypal.me/danclift</a></div>
+  </div>
+</section>
+
+<div class="divider"><div class="bd-r"></div><div style="background:var(--chrome);"></div><div class="bd-o"></div><div class="bd-s"></div></div>
+<footer>
+  <div>
+    <div class="f-name">Daniel Clift</div>
+    <div class="f-meta">Inspired by <span class="f-links"><a href="https://en.wikipedia.org/wiki/Brutalist_architecture">Brutalism</a>, <a href="https://en.wikipedia.org/wiki/Abstract_expressionism">Abstract expressionism</a>, <a href="https://en.wikipedia.org/wiki/Pop_art">Pop art</a></span></div>
+  </div>
+  <div class="f-links"><a href="https://github.com/moomindc?tab=repositories">GitHub</a><a href="https://www.linkedin.com/in/danielclift/">LinkedIn</a><a href="mailto:dan@couchsurfer.co.uk">Email</a></div>
+</footer>
+<script>
+function applyDark(d){document.body.classList.toggle('dark',d);document.documentElement.classList.toggle('dark',d);document.getElementById('dmb').textContent=d?'◑ Light':'◐ Dark';}
+function toggleDark(){applyDark(!document.body.classList.contains('dark'));}
+</script>
+</body>
+</html>
