@@ -1,0 +1,12 @@
+{
+  "name": "DoNotForget",
+  "description": "A tiny web application I use to keep a record of things I need to not forget (such as expenses that work owes me) that offers quick entry, robust storage and easy ticking off.  Reminded me how much I dislike Java script, but had fun with Cloudflare pages and D1 managed databse and Supabase for authentication.",
+  "date": "2026",
+  "version": "1.0",
+  "language": "JavaScript",
+  "status": "complete",
+  "links": [
+    { "label": "Log In", "url": "https://donotforget-a22.pages.dev/" },
+    { "label": "Project", "url": "https://github.com/moomindc/javascriptDoNotForget" }
+  ]
+}

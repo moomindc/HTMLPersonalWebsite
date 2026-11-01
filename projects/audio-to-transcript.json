@@ -1,0 +1,14 @@
+{
+  "name": "Audio to Transcript to LLM",
+  "description": "Not really useful (well no better than real applications designed for the purpose) but a collection of local private java script applications that will record system audio, transcribe the audio into text and then allow you to question the transcript using a local LLM.  Essentially a local browser way to pass your anti corruption and bribary training without needing to pay too much attention.",
+  "date": "2026",
+  "version": "0.1",
+  "language": "JavaScript",
+  "status": "in-progress",
+  "links": [
+    { "label": "Open project & Experiment", "url": "audioToTranscript/index.html" },
+    { "label": "Record project", "url": "https://github.com/moomindc/javascriptSoundToAudio" },
+    { "label": "Transcribe project", "url": "https://github.com/moomindc/javascriptAudioToTranscript" },
+    { "label": "Chat project", "url": "https://github.com/moomindc/javascriptTranscriptToLLM" }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "ClipMonster",
+  "description": "A clipboard manager for Windows that remembers everything you copy, lets you search it, and pastes it back where you want it. It also takes screenshots (region, window, full screen or scrolling page), reads the text in them with OCR so they are searchable, and lets you mark them up and blur out private details. Everything stays on your PC: no account, no telemetry, no internet connection.",
+  "date": "2026-10",
+  "version": "1.0",
+  "language": "Python",
+  "status": "complete",
+  "featured": 1,
+  "links": [
+    { "label": "Download project", "url": "https://pub-98806ba3606e4c95b96554ebbdf892ca.r2.dev/ClipMonster-1.0-win64.zip" },
+    { "label": "SHA 256 checksum", "url": "downloads/ClipMonster-1.0-win64.zip.sha256" }
+  ],
+  "image": {
+    "file": "clipmonster.gif",
+    "alt": "ClipMonster logo",
+    "placement": "behind"
+  }
+}

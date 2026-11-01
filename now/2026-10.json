@@ -1,0 +1,38 @@
+{
+  "subtitle": "What I'm up to (if I remember to actually update this)",
+  "items": [
+    {
+      "key": "Building",
+      "style": "raw",
+      "list": [
+        "Publishing a new personal website - that should be easy(ish) to maintain"
+      ]
+    },
+    {
+      "key": "Exploring",
+      "style": "ink",
+      "list": [
+        "Considering how I can port some code to macOS even though I do not own a Macintosh"
+      ]
+    },
+    {
+      "key": "Travel",
+      "style": "slate",
+      "text": "Had a great break in Lanzarote and a work trip to Paris, my next international trip will be to Thailand"
+    },
+    {
+      "key": "Media",
+      "style": "ochre",
+      "list": [
+        "The Capture season two and ...",
+        "This City is Ours",
+        "Just watched 'Project Hail Mary' I now need to read the book as I think they stripped out a lot of the science."
+      ]
+    },
+    {
+      "key": "Exercise",
+      "style": "sage",
+      "text": "Achieved a sub 55 minute 10km now want a sub 50 minute one"
+    }
+  ]
+}

@@ -1,0 +1,651 @@
+PRD: Local-Only AI Audio Transcription Web Application
+1. Product Overview
+Build a fully local web application that allows a user to upload an audio file, transcribe the speech to text using a locally executed AI model, and copy the resulting transcript to the clipboard.
+The application must operate 100% locally on the user’s machine after loading the web app, with no server-side transcription and no requirement to upload audio data to any remote service. The app should support downloading transcription models dynamically, caching them locally so they do not need to be downloaded again on future page loads.
+The UI should be simple, fast, and accessible, with an optional expandable Options panel containing configurable transcription settings. User-selected transcription settings should persist using cookies.
+
+2. Goals
+Primary Goals
+
+Allow a user to upload an audio file in common formats (at minimum MP3, with flexibility for WAV, M4A, OGG, FLAC, etc.).
+Run speech-to-text locally in the browser using a selectable AI model.
+Display the transcription result in a text output area.
+Provide a “Copy to Clipboard” button once transcription is complete.
+Allow users to configure transcription options via an expandable Options panel.
+Allow users to select from multiple transcription models.
+Dynamically download models on demand.
+Cache downloaded models locally so they do not need to be redownloaded on page refresh/reopen.
+Save user-selected transcription settings in a cookie.
+
+Secondary Goals
+
+Provide clear progress and status indicators for:
+
+model download
+model load
+transcription progress
+
+
+Handle unsupported files and transcription failures gracefully.
+Work reasonably well on modern desktop browsers.
+
+
+3. Non-Goals
+The initial version does not need to include:
+
+cloud-based transcription
+user accounts or authentication
+storage of uploaded audio files beyond runtime use
+collaborative features
+speaker diarization (unless supported later)
+translation to other languages (unless explicitly enabled later)
+punctuation/editorial rewriting beyond what the model already provides
+exporting to advanced formats like DOCX/PDF/SRT/VTT in v1
+batch processing multiple files in v1
+
+
+4. Target Users
+Primary User
+A user who wants a private, local, browser-based transcription tool for audio files without sending data to the cloud.
+User Needs
+
+privacy
+simplicity
+control over model choice
+local persistence of settings
+no repeated downloads of models
+easy ability to copy transcript text
+
+
+5. User Stories
+
+As a user, I want to upload an audio file so I can transcribe spoken content.
+As a user, I want the app to support common audio file formats so I am not restricted to MP3 only.
+As a user, I want to choose which transcription model to use so I can balance speed and accuracy.
+As a user, I want the selected model to download automatically if it is not already available locally.
+As a user, I want downloaded models cached locally so I do not have to redownload them every time I open the app.
+As a user, I want to configure transcription options in an expandable panel so the main UI remains clean.
+As a user, I want my selected options remembered in a cookie so I do not need to set them every time.
+As a user, I want to see progress/status while the model is downloading or transcription is running.
+As a user, I want to read the generated transcript in a large text area.
+As a user, I want a one-click Copy to Clipboard button after transcription completes.
+As a user, I want clear error messages if the file is unsupported or the transcription fails.
+
+
+6. Functional Requirements
+6.1 File Upload
+The application must:
+
+provide a visible file upload control
+allow selecting a single local audio file
+support at minimum:
+
+MP3
+WAV
+M4A
+OGG
+FLAC (if decoding is supported in browser/runtime)
+WebM (audio)
+
+
+validate file type and reject unsupported formats with a user-friendly error
+display the selected file name and optionally file size/duration when available
+
+Acceptance Criteria
+
+User can select a supported audio file from disk.
+Unsupported formats produce a clear inline error message.
+Uploading a new file resets prior transcription state.
+
+
+6.2 Local-Only Transcription
+The application must:
+
+perform transcription fully on the client side
+avoid uploading user audio to any server for processing
+run AI inference using a browser-compatible local model approach (e.g., WebAssembly/WebGPU/Web Worker-backed local inference)
+
+Implementation (as built):
+Uses Transformers.js v3 (@huggingface/transformers@3) loaded from CDN (jsDelivr) inside a Web Worker.
+Inference device resolution:
+  - Attempts WebGPU first — checks for shader-f16 feature support.
+  - Falls back to WASM (CPU) if WebGPU is unavailable or fails.
+  - WebGPU load has a 45-second timeout; if exceeded, automatically retries on WASM.
+The worker reports the active device ('webgpu' | 'wasm') to the main thread on model_ready.
+The main thread status area displays "Ready — GPU", "Ready — CPU (N cores)", or "Ready" accordingly.
+
+Acceptance Criteria
+
+No audio content is sent to a remote backend for transcription.
+App remains functional after initial load without server-side inference dependencies.
+
+
+6.3 Model Selection
+The application must:
+
+provide a model selection dropdown or similar UI
+support multiple transcription models (e.g., tiny/base/small/medium or equivalent depending on chosen stack)
+display useful metadata for each model where available:
+
+name
+approximate size
+expected speed / accuracy tradeoff
+download status (not downloaded / downloaded / downloading)
+
+
+
+Implementation (as built) — Model Registry (modelRegistry.js):
+Each model entry has the following fields:
+  id           — Hugging Face model ID (used as the unique key)
+  label        — Display name
+  sizeMB       — Approximate download size
+  description  — Speed/accuracy tradeoff summary
+  multilingual — Boolean; true if the model supports languages other than English
+  supportsTranslation — Boolean; true if the model supports translate task
+  cached       — Boolean; set at runtime by cache probe
+
+Models available:
+
+ID: Xenova/whisper-tiny.en        | Label: Tiny (English)                       | Size: 39 MB
+ID: Xenova/whisper-tiny           | Label: Tiny (Multilingual)                  | Size: 39 MB
+ID: Xenova/whisper-base.en        | Label: Base (English)          [DEFAULT]    | Size: 74 MB
+ID: Xenova/whisper-base           | Label: Base (Multilingual)                  | Size: 74 MB
+ID: Xenova/whisper-small.en       | Label: Small (English)                      | Size: 244 MB
+ID: Xenova/whisper-small          | Label: Small (Multilingual)                 | Size: 244 MB
+ID: onnx-community/distil-small.en       | Label: DistilWhisper Small (English) | Size: 166 MB
+ID: distil-whisper/distil-large-v3.5-ONNX | Label: DistilWhisper Large v3.5    | Size: 756 MB
+
+English-only models (IDs ending in .en or containing 'distil-whisper') have supportsTranslation: false.
+The "Translate to English" task option is disabled in the UI for these models.
+Default model: Xenova/whisper-base.en
+
+Acceptance Criteria
+
+User can select from multiple models before transcription.
+Current selected model is clearly displayed.
+If a model is not available locally, the app initiates a download flow.
+
+
+6.4 Dynamic Model Download
+The application must:
+
+dynamically download a transcription model when the user selects one that is not already cached locally
+show download progress if technically possible
+prevent duplicate or concurrent duplicate downloads of the same model
+gracefully handle download failure or interruption
+
+Acceptance Criteria
+
+First-time use of a model triggers a download.
+User sees download status and/or progress.
+If download fails, an actionable error appears and the UI remains usable.
+
+
+6.5 Local Model Caching
+The application must:
+
+cache downloaded models locally in browser storage suitable for large assets
+reuse cached models on subsequent page reloads and future sessions
+avoid re-downloading cached models unless:
+
+cache is cleared
+model version changes
+user explicitly requests refresh/re-download
+
+
+
+Recommended Implementation Direction
+Use a browser storage strategy appropriate for large binary/model assets, such as:
+
+Cache API
+IndexedDB
+optionally coordinated with a Service Worker if useful
+
+
+Note: cookies are not suitable for storing model binaries. Cookies should be used only for lightweight user settings/preferences.
+
+Acceptance Criteria
+
+Reloading the page does not require redownloading a previously downloaded model.
+Cached models can be detected and reused automatically.
+
+
+6.6 Transcription Options Panel
+The application must:
+
+include an expandable/collapsible Options panel
+keep the default UI simple, with advanced settings hidden unless expanded
+allow configuration of relevant transcription settings
+
+Initial Option Set
+Include configurable options such as:
+
+selected model
+language:
+
+auto-detect
+explicit language selection if supported
+
+
+task mode:
+
+transcribe
+translate (only if supported by chosen model/stack)
+
+
+timestamps:
+
+off by default
+segment timestamps on/off if supported
+
+
+chunk length / segment length (if applicable)
+decoding or inference preference:
+
+faster vs more accurate mode if supported
+
+
+temperature or decoding variability (optional, only if meaningful for chosen model)
+normalization/cleanup options:
+
+trim whitespace
+merge repeated spaces
+
+
+automatically copy transcript to clipboard after completion (optional toggle)
+
+Acceptance Criteria
+
+Options panel can be expanded/collapsed.
+User can modify supported settings before transcription begins.
+Unsupported options for a selected model are disabled or hidden.
+
+
+6.7 Cookie-Based Preference Persistence
+The application must:
+
+save relevant user-selected transcription settings in a cookie
+restore these settings on future visits/page reloads
+use reasonable cookie expiration (e.g., 30–365 days)
+avoid storing large data in cookies
+
+Persisted Settings (minimum)
+
+selected model
+selected language
+task mode
+timestamps on/off
+any enabled cleanup settings
+any other lightweight UI preferences
+
+Acceptance Criteria
+
+Refreshing the page restores previously selected options from cookie data.
+Cookies store preferences only, not transcript text or model binaries.
+
+
+6.8 Transcription Execution
+The application must:
+
+provide a Transcribe button
+disable the button when transcription cannot run (e.g., no file selected, model not ready)
+process the uploaded audio and produce text output
+show runtime status such as:
+
+preparing model
+decoding audio
+transcribing
+complete
+failed
+
+
+
+Acceptance Criteria
+
+Clicking Transcribe starts local transcription.
+Status updates are visible.
+User cannot accidentally trigger overlapping transcription jobs.
+
+
+6.9 Transcript Display
+The application must:
+
+display transcription output in a readable, scrollable text area or output panel
+allow transcript text to be selected and edited manually
+preserve line breaks if timestamps/segments are enabled
+
+Acceptance Criteria
+
+Transcript is clearly visible after completion.
+User can manually review and edit text before copying.
+
+
+6.10 Copy to Clipboard
+The application must:
+
+display or enable a Copy to Clipboard button once transcript text is available
+use the browser clipboard API where possible
+provide success/failure feedback
+
+Acceptance Criteria
+
+User can click once to copy transcript text.
+A confirmation message appears on success (e.g., “Copied!”).
+If clipboard permission fails, show a fallback instruction.
+
+
+6.11 Error Handling
+The application must handle:
+
+unsupported file formats
+model download failure
+insufficient browser capabilities
+inference runtime failure
+missing audio decode support
+cancellation/interruption where possible
+
+Acceptance Criteria
+
+Errors are shown in human-readable language.
+App remains recoverable without full reload whenever possible.
+
+
+7. UX / UI Requirements
+7.1 Layout
+The UI should include:
+
+Header / App Title
+Audio Upload Section
+Model Selection
+Options Panel (collapsed by default)
+Transcribe Button
+Status / Progress Area
+Transcript Output Area
+Copy to Clipboard Button
+
+7.2 UX Principles
+
+Keep the main workflow obvious:
+
+upload audio
+pick model
+optionally adjust settings
+transcribe
+copy transcript
+
+
+Advanced settings should not overwhelm first-time users.
+Provide clear status messages throughout.
+Make it obvious whether a model is:
+
+already cached
+currently downloading
+ready to use
+
+
+
+7.3 Accessibility
+The app should:
+
+use semantic HTML
+support keyboard navigation
+provide visible focus states
+label all form controls
+use sufficient contrast
+announce progress/status updates where practical
+
+
+8. Technical Requirements
+8.1 Technology Constraints
+The app must be written using:
+
+JavaScript
+HTML
+CSS
+
+No server-side application logic is required for transcription.
+8.2 Browser Compatibility
+Target modern desktop browsers first:
+
+Chrome / Edge latest
+Firefox latest (best effort depending on inference backend)
+Safari latest (best effort depending on local ML/browser limitations)
+
+8.3 Local Inference Considerations
+Implementation may use a client-side inference approach such as:
+
+WebAssembly-based speech model runtime
+WebGPU acceleration when available
+Web Workers to avoid blocking the main UI thread
+
+The architecture should prefer:
+
+non-blocking inference
+responsive UI during long-running operations
+progress updates to main thread
+
+Implementation (as built):
+Library:     Transformers.js v3 (@huggingface/transformers@3) via CDN (jsDelivr).
+             No build step required — loaded via import in worker.js (ES module Worker).
+Model type:  automatic-speech-recognition pipeline (Whisper ONNX models from Hugging Face Hub).
+Device:      WebGPU (fp16) preferred; WASM (CPU) fallback.
+             WebGPU load has 45-second timeout before automatic WASM retry.
+Threading:   All inference runs in a dedicated Web Worker (worker.js) to keep the UI thread unblocked.
+Chunking:    Audio processed in 30-second chunks with 5-second stride for long-file support.
+             A chunk_callback fires per completed chunk to report transcription progress (0–0.99).
+             A callback_function fires every token for liveness confirmation during slow first chunks.
+             An interval heartbeat (every 5 s) logs a warning if the pipeline appears stalled.
+Timestamps:  Supported via return_timestamps: 'word' when the timestamps option is enabled.
+Language/task: Only passed to the pipeline for multilingual models; suppressed for English-only models.
+
+8.4 Audio Decoding
+The app should use browser-supported APIs or compatible decoding libraries to normalize input audio as needed for the transcription model.
+
+Implementation (as built):
+Uses the browser's built-in Web Audio API (AudioContext.decodeAudioData).
+No external audio library required.
+Steps:
+  1. Read file as ArrayBuffer (FileReader).
+  2. Decode compressed audio to PCM via AudioContext.decodeAudioData.
+  3. Mix down to mono by averaging all channels.
+  4. Resample to 16 kHz (Whisper's required sample rate) using OfflineAudioContext if needed.
+Decoding runs on the main thread (fast enough for typical files); the audio buffer is then
+transferred (zero-copy) to the Web Worker via postMessage transferable.
+
+9. Architecture (as built)
+9.1 Module Breakdown
+
+File                 | Responsibility
+---------------------|---------------------------------------------------------------
+index.html           | App shell — semantic HTML structure, no inline logic
+css/app.css          | All visual styles
+js/app.js            | Entry point: state machine, event wiring, single render() pass
+js/modelRegistry.js  | Static model catalogue — single source of truth for model metadata
+js/modelManager.js   | Cache probe (Cache API) + Worker interface for model load/ready
+js/settings.js       | Cookie read/write (atSettings cookie, 365-day expiry)
+js/audioProcessor.js | File validation, Web Audio decode, mono mix, 16 kHz resample
+js/clipboardManager.js | Clipboard API copy with textarea fallback
+js/worker.js         | Web Worker: Transformers.js pipeline, device resolution, inference
+
+app.js maintains a single `state` object and a single `render()` function.
+No framework is used. All DOM writes are funnelled through render().
+
+9.2 Web Worker Message Protocol
+
+Main → Worker:
+  { type: 'load_model',  modelId: string,        options: { preferWebGPU: true } }
+  { type: 'transcribe',  audio: Float32Array,     options: { language, task, timestamps, cleanupWhitespace } }
+
+Worker → Main:
+  { type: 'model_loading' }
+  { type: 'download_progress', file: string, progress: number }   // 0..1
+  { type: 'model_ready',       modelId: string, device: 'webgpu'|'wasm' }
+  { type: 'transcribing' }
+  { type: 'transcription_progress', progress: number }            // 0..0.99
+  { type: 'result',  text: string, chunks: array|null }
+  { type: 'error',   message: string }
+
+9.3 Storage Strategy
+
+Cookies (atSettings):  user preferences only — lightweight JSON, 365-day expiry
+Cache API:             model ONNX files cached automatically by Transformers.js
+                       (env.useBrowserCache = true)
+In-memory state:       selected file, transcript text, runtime status, download progress
+
+
+10. Data Model (as built)
+10.1 User Preferences (stored in cookie: atSettings, 365-day expiry)
+{
+  "selectedModel":      "Xenova/whisper-base.en",   // Hugging Face model ID
+  "language":           "auto",                      // ISO code or "auto"
+  "task":               "transcribe",                // "transcribe" | "translate"
+  "timestamps":         false,                       // word-level timestamps on/off
+  "cleanupWhitespace":  true,                        // collapse runs of whitespace
+  "autoCopy":           false                        // copy transcript when done
+}
+
+10.2 Runtime State (app.js state object, in-memory only)
+{
+  "selectedFile":         null,           // File | null
+  "fileError":            null,           // string | null
+  "modelRegistry":        [],             // copy of MODEL_REGISTRY with live cached flags
+  "modelStatus":          "idle",         // "idle" | "loading" | "ready" | "error"
+  "downloadProgress":     {},             // { [filename]: 0..1 } per-file download progress
+  "downloadOverall":      0,              // 0..1 average across all tracked files
+  "modelError":           null,           // string | null
+  "activeDevice":         null,           // "webgpu" | "wasm" | null
+  "transcriptionStatus":  "idle",         // "idle" | "decoding" | "transcribing" | "done" | "error"
+  "transcriptionProgress": 0,            // 0..1 chunk-level progress
+  "transcriptText":       "",
+  "transcriptionError":   null,           // string | null
+  "copyFeedback":         null,           // null | "copied" | "failed"
+  "settings":             {}              // loaded from cookie, see 10.1
+}
+
+10.3 Model Registry Entry (modelRegistry.js)
+{
+  "id":                   "Xenova/whisper-base.en",  // HF model ID — used as Worker payload
+  "label":                "Base (English)",
+  "sizeMB":               74,
+  "description":          "Balanced speed and accuracy, English only.",
+  "multilingual":         false,
+  "supportsTranslation":  false,
+  "cached":               false           // updated at runtime by checkCachedModels()
+}
+
+11. Primary User Flow
+
+User opens the app.
+App loads saved settings from cookie.
+App checks which models are already cached locally.
+User uploads an audio file.
+User optionally changes model and/or settings in the Options panel.
+If selected model is not cached, app downloads it and shows progress.
+User clicks Transcribe.
+App runs local transcription and shows status/progress.
+Transcript appears in output panel.
+Copy to Clipboard button becomes enabled.
+User copies transcript text.
+
+
+12. Edge Cases
+The app should explicitly handle:
+
+user selects unsupported file type
+user starts transcription without selecting a file
+selected model is not downloaded yet
+model download interrupted midway
+browser storage quota exceeded
+cookie read/write fails
+browser lacks necessary APIs for local inference
+large audio files causing slow execution or memory issues
+user changes model mid-download or mid-transcription
+user uploads a second file while transcript exists
+clipboard access denied by browser
+
+
+13. Performance Requirements
+
+UI should remain responsive during model download and transcription.
+Heavy computation should not freeze the page.
+Cached models should load faster than first-time download.
+App should provide visible progress/status for long operations exceeding ~1 second.
+
+
+14. Privacy & Security Requirements
+
+Audio files must remain local to the user’s machine during transcription.
+No transcript or audio should be transmitted to a server for processing.
+Cookies should store only lightweight preferences, not sensitive content or large data.
+App should clearly communicate that transcription occurs locally.
+
+
+15. Acceptance Criteria Summary
+The product is considered complete for v1 when:
+
+User can upload a supported audio file.
+User can choose from multiple transcription models.
+App downloads a model dynamically when needed.
+Downloaded models are cached locally and reused on reload.
+App runs transcription locally in-browser.
+Transcript is displayed in a text area.
+Copy to Clipboard works after transcription completes.
+An expandable Options panel exists with configurable settings.
+User settings persist via cookies across page reloads.
+Progress and errors are shown clearly.
+App is implemented with JavaScript, HTML, and CSS.
+
+
+16. Implementation Notes
+16.1 Build and Dependencies
+No build step or package manager required.
+The app runs directly as static files in any modern browser.
+Single external dependency: Transformers.js v3 loaded from CDN in worker.js:
+  import { pipeline, env } from
+    'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3/dist/transformers.min.js';
+All other modules are plain ES modules loaded via <script type="module" src="./js/app.js">.
+
+16.2 Running Locally
+Open index.html in a modern browser. A local HTTP server is recommended (e.g. VS Code Live Server,
+python -m http.server) to avoid CORS restrictions on module imports from the filesystem.
+Web Worker requires a non-file:// origin to load ES module workers in Chrome.
+
+16.3 Key Decisions and Rationale
+Decision                         | Rationale
+---------------------------------|--------------------------------------------------
+Transformers.js v3 via CDN       | No build step; Whisper ONNX models from HF Hub
+WebGPU → WASM fallback           | GPU acceleration where available; always works otherwise
+45s WebGPU timeout               | Prevents silent hangs on GPU driver stalls
+Audio decoded on main thread     | Web Audio API not available in Workers; fast enough for typical files
+Audio transferred to Worker      | Zero-copy postMessage with transferable ArrayBuffer
+30s/5s chunk stride              | Handles large audio without OOM; matches Transformers.js defaults
+Chunk + token callbacks          | Provides granular progress and liveness signals
+Model IDs = HF repo paths        | Passed directly to pipeline(); no mapping layer needed
+Cookie (not localStorage)        | Works across origins; easy to inspect; small payload
+Cache API for models             | Written automatically by Transformers.js (env.useBrowserCache)
+Single render() function         | Predictable, debuggable state → DOM updates
+
+16.4 Original Build Priorities (completed)
+1. Basic UI layout in plain HTML/CSS/JavaScript.        ✓
+2. File upload and validation.                          ✓
+3. Settings panel and cookie persistence.               ✓
+4. Model registry and model selection UI.               ✓
+5. Dynamic model download and local caching.            ✓
+6. Local transcription engine wired to uploaded audio.  ✓
+7. Progress states and error handling.                  ✓
+8. Copy-to-clipboard UX polish.                         ✓
+
+
+17. Future Enhancements (Post-v1)
+Potential future enhancements:
+
+drag-and-drop file upload
+transcript download as TXT/SRT/VTT
+speaker segmentation/diarization
+timestamped transcript view
+live microphone transcription
+chunked processing for very large audio files
+multi-file queue/batch transcription
+language auto-detection improvements
+model management screen (delete cached models, show disk usage)
+PWA support for better offline experience

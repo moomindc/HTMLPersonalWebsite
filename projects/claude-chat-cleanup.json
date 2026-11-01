@@ -1,0 +1,11 @@
+{
+  "name": "Claude Chat Cleanup",
+  "description": "A Windows command-line tool for browsing and deleting your Claude.ai conversations. It lists each chat with its title, summary and last-updated date. Move with the arrow keys and press Delete to remove one. There is no confirmation prompt, so be careful. It uses unofficial claude.ai endpoints with your session cookie, so it may break if they change.",
+  "date": "2026",
+  "version": "0.1",
+  "language": "Python",
+  "status": "in-progress",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/moomindc/pythonClaudeConversationCleanup" }
+  ]
+}

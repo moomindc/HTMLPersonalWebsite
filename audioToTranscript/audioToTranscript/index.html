@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AudioToTranscript — Local AI Transcription</title>
+  <meta name="description" content="Private, browser-based audio transcription powered by Whisper. No cloud uploads.">
+  <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       Header
+  ════════════════════════════════════════════════════════ -->
+  <header>
+    <h1>AudioToTranscript</h1>
+    <span class="badge--local" title="All audio processing happens locally in your browser">
+      Local only &#128274;
+    </span>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════
+       Main content
+  ════════════════════════════════════════════════════════ -->
+  <main>
+
+    <!-- 1. File upload ─────────────────────────────────── -->
+    <section class="card" aria-labelledby="upload-title">
+      <h2 class="card__title" id="upload-title">
+        Audio File
+        <span class="card__warning" id="file-warning" aria-label="File required">&#9888;</span>
+      </h2>
+
+      <div class="upload-zone" role="group" aria-label="Audio file upload">
+        <label class="upload-zone__label" for="file-input">
+          Select an audio file to transcribe
+          <br>
+          <span style="font-size:.8rem">MP3 &middot; WAV &middot; M4A &middot; OGG &middot; FLAC &middot; WebM</span>
+        </label>
+        <br>
+        <label class="upload-zone__btn" for="file-input" tabindex="0" role="button">
+          Browse&hellip;
+        </label>
+        <input
+          type="file"
+          id="file-input"
+          accept="audio/mpeg,audio/mp3,audio/wav,audio/x-wav,audio/wave,audio/mp4,audio/x-m4a,audio/m4a,audio/ogg,audio/flac,audio/x-flac,audio/webm,.mp3,.wav,.m4a,.ogg,.flac,.webm"
+          aria-label="Select audio file"
+        >
+      </div>
+
+      <p id="file-info" class="file-info" hidden aria-live="polite"></p>
+      <p id="file-error" class="error-msg error-msg--no-icon" hidden role="alert" aria-live="assertive"></p>
+    </section>
+
+    <!-- 2. Options panel ───────────────────────────────── -->
+    <section class="card" aria-labelledby="options-title">
+      <h2 class="card__title" id="options-title">Options</h2>
+
+      <!-- 2a. Transcription Model (moved from its own card) -->
+      <details class="options-panel" id="model-details" open>
+        <summary>
+          Transcription Model
+          <span class="card__warning" id="model-warning" aria-label="Model not ready">&#9888;</span>
+        </summary>
+        <div class="options-body">
+          <div
+            id="model-list"
+            role="radiogroup"
+            aria-label="Select transcription model"
+          >
+            <!-- Populated by app.js -->
+          </div>
+          <p id="model-error" class="error-msg error-msg--no-icon" hidden role="alert" aria-live="assertive"></p>
+        </div>
+      </details>
+
+      <!-- 2b. Transcription Settings -->
+      <details class="options-panel" id="options-details">
+        <summary aria-controls="options-body">Transcription Settings</summary>
+
+        <form id="options-form" class="options-body" aria-label="Transcription settings">
+
+          <!-- Language -->
+          <div class="option-row">
+            <label for="opt-language">Language</label>
+            <select id="opt-language" name="language" aria-label="Select language">
+              <option value="auto">Auto-detect</option>
+              <option value="en">English</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+              <option value="es">Spanish</option>
+              <option value="it">Italian</option>
+              <option value="ja">Japanese</option>
+              <option value="ko">Korean</option>
+              <option value="zh">Chinese</option>
+              <option value="pt">Portuguese</option>
+              <option value="ru">Russian</option>
+              <option value="nl">Dutch</option>
+              <option value="ar">Arabic</option>
+              <option value="pl">Polish</option>
+              <option value="sv">Swedish</option>
+              <option value="tr">Turkish</option>
+            </select>
+          </div>
+
+          <!-- Task mode -->
+          <div class="option-row">
+            <label>Task</label>
+            <div class="radio-group" role="radiogroup" aria-label="Task mode">
+              <label>
+                <input type="radio" name="task" id="opt-task-transcribe" value="transcribe" checked>
+                Transcribe
+              </label>
+              <label>
+                <input type="radio" name="task" id="opt-task-translate" value="translate">
+                Translate to English
+              </label>
+            </div>
+          </div>
+
+          <!-- Timestamps -->
+          <div class="option-row">
+            <label class="checkbox-label" for="opt-timestamps">
+              <input type="checkbox" id="opt-timestamps" name="timestamps">
+              Include word timestamps
+            </label>
+          </div>
+
+          <!-- Whitespace cleanup -->
+          <div class="option-row">
+            <label class="checkbox-label" for="opt-cleanup">
+              <input type="checkbox" id="opt-cleanup" name="cleanupWhitespace" checked>
+              Clean up extra whitespace
+            </label>
+          </div>
+
+          <!-- Auto-copy -->
+          <div class="option-row">
+            <label class="checkbox-label" for="opt-autocopy">
+              <input type="checkbox" id="opt-autocopy" name="autoCopy">
+              Auto-copy transcript when done
+            </label>
+          </div>
+
+        </form>
+      </details>
+    </section>
+
+    <!-- 4. Transcribe action & status ─────────────────── -->
+    <section class="card" aria-labelledby="action-title">
+      <h2 class="card__title" id="action-title">Transcribe</h2>
+
+      <div class="action-row">
+        <button
+          id="transcribe-btn"
+          type="button"
+          disabled
+          aria-disabled="true"
+          aria-label="Start transcription"
+        >
+          Transcribe
+        </button>
+
+        <div class="status-area" aria-live="polite" aria-atomic="true">
+          <span id="status-text">Initialising&hellip;</span>
+          <progress
+            id="progress-bar"
+            value="0"
+            max="1"
+            aria-label="Model download progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            hidden
+          ></progress>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Transcript output ───────────────────────────── -->
+    <section class="card" aria-labelledby="transcript-title">
+      <h2 class="card__title" id="transcript-title">Transcript</h2>
+
+      <textarea
+        id="transcript"
+        aria-label="Transcription result"
+        placeholder="Your transcript will appear here after transcription is complete. You can edit the text before copying."
+        spellcheck="true"
+        autocomplete="off"
+      ></textarea>
+
+      <p id="transcription-error" class="error-msg error-msg--no-icon" hidden role="alert" aria-live="assertive"></p>
+
+      <div class="action-row" style="margin-top:.75rem">
+        <button
+          id="copy-btn"
+          type="button"
+          disabled
+          aria-disabled="true"
+          aria-label="Copy transcript to clipboard"
+        >
+          Copy to Clipboard
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

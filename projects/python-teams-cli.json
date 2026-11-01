@@ -1,0 +1,11 @@
+{
+  "name": "Python Teams CLI",
+  "description": "A Python command-line tool for reading and sending Microsoft Teams messages from the terminal. Sign in with a device-code login as yourself, so no Azure app registration is needed. List teams, channels and chats, read recent history, and see what's been active in the last few hours. Sending needs an explicit --write flag to stop accidental messages, and every command can output JSON for scripting.",
+  "date": "2026",
+  "version": "0.1",
+  "language": "Python",
+  "status": "in-progress",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/moomindc/PythonTeamsCLI" }
+  ]
+}

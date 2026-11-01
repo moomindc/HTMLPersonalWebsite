@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TranscriptToLLM &mdash; Local AI Q&amp;A</title>
+  <meta name="description" content="Upload a transcript and ask questions using a local AI model. Nothing leaves your device." />
+  <link rel="stylesheet" href="./css/app.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "@mlc-ai/web-llm": "https://esm.run/@mlc-ai/web-llm",
+      "@huggingface/transformers": "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3/+esm"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<header>
+  <h1>TranscriptToLLM</h1>
+  <span class="badge--local" title="All processing happens locally in your browser">Local only &#128274;</span>
+</header>
+
+<!-- p id="app-error" class="error-msg" role="alert" aria-live="assertive" hidden></p-->
+
+<main>
+
+  <!-- ── Model loading status bar ─────────────────────────────── -->
+  <div class="model-status-bar">
+    <span id="model-progress-text" aria-live="polite" hidden></span>
+    <progress id="model-progress" aria-label="Model loading progress" value="0" max="1" hidden></progress>
+  </div>
+
+  <!-- ── Card 1: Transcript ───────────────────────────────────── -->
+  <section class="card" id="transcript-card" aria-labelledby="transcript-title">
+    <h2 class="card__title" id="transcript-title">Transcript</h2>
+
+    <div class="upload-zone" id="upload-zone" role="button" tabindex="0"
+      aria-label="Upload a transcript file by clicking or dropping">
+      <label class="upload-zone__label" for="transcript-file">
+        Drop a <strong>.txt</strong> or <strong>.md</strong> file here, or
+        <span class="upload-zone__btn">Browse</span>
+      </label>
+      <input type="file" id="transcript-file" accept=".txt,.md,text/plain,text/markdown"
+        aria-label="Select transcript file" />
+    </div>
+    <p id="file-info" class="file-info" aria-live="polite"></p>
+
+    <textarea
+      id="transcript"
+      placeholder="&hellip;or paste your transcript here"
+      aria-label="Transcript text"
+      spellcheck="false"
+    ></textarea>
+  </section>
+
+  <!-- ── Card 2: Chat ───────────────────────────────────────── -->
+  <section class="card" id="chat-card" aria-labelledby="chat-title">
+    <h2 class="card__title" id="chat-title">Ask Questions</h2>
+
+    <div id="chat-messages" role="log" aria-live="polite" aria-label="Chat conversation"></div>
+
+    <p id="chat-error" class="error-msg" role="alert" aria-live="assertive" hidden></p>
+
+    <div class="chat-input-row">
+      <textarea
+        id="chat-input"
+        placeholder="Ask a question about the transcript&hellip; (Enter to send, Shift+Enter for new line)"
+        aria-label="Question input"
+        rows="2"
+      ></textarea>
+      <button id="send-btn" type="button" disabled aria-label="Send question">Send</button>
+    </div>
+  </section>
+
+  <!-- ── Card 3: Options ────────────────────────────────────── -->
+  <section class="card" id="options-card" aria-labelledby="options-title">
+    <h2 class="card__title" id="options-title">Options</h2>
+
+    <details class="options-panel" id="model-options-details">
+      <summary>Model</summary>
+      <div class="options-body">
+        <div class="recorder-status-row" style="margin-bottom:.5rem">
+          <span id="gpu-badge" class="badge badge--loading">Detecting WebGPU&hellip;</span>
+        </div>
+
+        <div id="model-list" role="radiogroup" aria-label="Select a language model"></div>
+
+        <div class="action-row" style="margin-top:.75rem">
+          <button id="load-model-btn" type="button" aria-label="Download and load selected model">
+            Load Model
+          </button>
+          <button id="delete-model-btn" type="button" class="btn--outline" aria-label="Delete cached model from browser storage">
+            Delete Cached
+          </button>
+        </div>
+
+      </div>
+    </details>
+
+    <details class="options-panel" id="options-details">
+      <summary>Advanced Settings</summary>
+      <form class="options-body" autocomplete="off">
+
+        <div class="option-group">
+          <div class="option-row">
+            <label for="opt-chunk-size">Chunk Size</label>
+            <div class="slider-group">
+              <input type="range" id="opt-chunk-size"
+                min="500" max="5000" step="100" value="2000"
+                aria-label="Chunk size in characters" aria-valuetext="2000" />
+              <span id="opt-chunk-size-val" class="slider-value">2000</span>
+            </div>
+          </div>
+          <p class="option-desc">How many characters of transcript are grouped together when searching for relevant context. Increase for longer, more complete passages; decrease if answers include too much irrelevant text.</p>
+        </div>
+
+        <div class="option-group">
+          <div class="option-row">
+            <label for="opt-overlap">Chunk Overlap</label>
+            <div class="slider-group">
+              <input type="range" id="opt-overlap"
+                min="0" max="500" step="50" value="200"
+                aria-label="Overlap between chunks in characters" aria-valuetext="200" />
+              <span id="opt-overlap-val" class="slider-value">200</span>
+            </div>
+          </div>
+          <p class="option-desc">How many characters adjacent chunks share. Higher overlap reduces the chance of missing context that falls at a chunk boundary, at the cost of some redundancy.</p>
+        </div>
+
+        <div class="option-group">
+          <div class="option-row">
+            <label for="opt-temperature">Temperature</label>
+            <div class="slider-group">
+              <input type="range" id="opt-temperature"
+                min="0" max="1" step="0.05" value="0.3"
+                aria-label="Response temperature (creativity)" aria-valuetext="0.30" />
+              <span id="opt-temperature-val" class="slider-value">0.30</span>
+            </div>
+          </div>
+          <p class="option-desc">Controls how creative or random responses are. Lower values (e.g. 0.1) give focused, factual answers closely tied to the transcript; higher values (e.g. 0.8) produce more varied, exploratory responses.</p>
+        </div>
+
+        <div class="option-group">
+          <label for="opt-system-prompt">System Prompt</label>
+          <textarea id="opt-system-prompt" rows="3"
+            aria-label="System prompt prepended to every question"
+            style="width:100%;margin-top:.35rem;resize:vertical"></textarea>
+          <p class="option-desc">Extra instructions sent to the model with every question. Edit or clear to customise how the model responds.</p>
+        </div>
+
+        <div class="option-group">
+          <div class="option-row">
+            <label for="opt-max-tokens">Max Response</label>
+            <select id="opt-max-tokens" aria-label="Maximum response length in tokens">
+              <option value="256">256 tokens</option>
+              <option value="512" selected>512 tokens</option>
+              <option value="1024">1024 tokens</option>
+              <option value="2048">2048 tokens</option>
+            </select>
+          </div>
+          <p class="option-desc">The maximum length of each response. A token is roughly ¾ of a word. Use 256–512 for concise answers; 1024–2048 if you need detailed summaries or the model is cutting off mid-sentence.</p>
+        </div>
+
+      </form>
+    </details>
+  </section>
+
+</main>
+
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>

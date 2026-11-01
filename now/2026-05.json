@@ -1,0 +1,41 @@
+{
+  "subtitle": "What I'm up to (if I remember to actually update this)",
+  "items": [
+    {
+      "key": "Building",
+      "style": "raw",
+      "list": [
+        "A pure python version of the Voltage Simple API",
+        "a new personal website",
+        "a Claude usage progress bar"
+      ]
+    },
+    {
+      "key": "Exploring",
+      "style": "ink",
+      "list": [
+        "Exploring my new Claude Pro subscription"
+      ]
+    },
+    {
+      "key": "Travel",
+      "style": "slate",
+      "text": "Next international trip will be to Belgium"
+    },
+    {
+      "key": "Media",
+      "style": "ochre",
+      "list": [
+        "White Lotus Season 3",
+        "Reacher soundtrack playlist",
+        "Murder at the Black Cat Cafe",
+        "Meaningful Guide to Retirement"
+      ]
+    },
+    {
+      "key": "Exercise",
+      "style": "sage",
+      "text": "Trying to get back to sub 55 minute 10km run"
+    }
+  ]
+}

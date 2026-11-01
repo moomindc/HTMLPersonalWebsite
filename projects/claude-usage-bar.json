@@ -1,0 +1,12 @@
+{
+  "name": "Claude Useage Bar",
+  "description": "A floating window that displays a progress bar as you use your allocation for the current 5 hour window of you Claude Pro account, plus some other nice to haves such as suto session start at configurable times.",
+  "date": "2026",
+  "version": "1.0",
+  "language": "Python",
+  "status": "complete",
+  "featured": 2,
+  "links": [
+    { "label": "View project", "url": "https://github.com/moomindc/pythonClaudeUseage" }
+  ]
+}

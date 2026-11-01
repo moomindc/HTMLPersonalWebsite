@@ -1,0 +1,11 @@
+{
+  "name": "HostsMaster 5000",
+  "description": "I spend more time than you would imagine editin hosts files on my machines and VM's, on linux this is lovely and easy 'sudo vi /etc/hosts' but on Windows is it in system or system32 ? run the text editor as Administrator . . . so I wrote a very simple python script that quickly allows me to add, amend, comment and delete entries - all from the CLI",
+  "date": "2026",
+  "version": "1.0",
+  "language": "Python",
+  "status": "complete",
+  "links": [
+    { "label": "View project", "url": "https://github.com/moomindc/pythonHostsManager" }
+  ]
+}

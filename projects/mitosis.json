@@ -1,0 +1,12 @@
+{
+  "name": "Mitosis",
+  "description": "You know the problem: you put three photos or two receipts on the flatbed, press scan, and end up with one giant image you then have to crop five, then rotate, then crop againa and again.  Mitosis fixes that — it detects each rectangular item automatically using edge detection and contour analysis, lets you confirm orientation interactively (what is the top), then saves each one as its own file (scan_a.png, scan_b.png…) with DPI and colour profile intact. CLI only, no cloud, no faff.",
+  "date": "2026",
+  "version": "1.0",
+  "language": "Python",
+  "status": "complete",
+  "featured": 3,
+  "links": [
+    { "label": "View project", "url": "https://github.com/moomindc/PythonMitosis" }
+  ]
+}

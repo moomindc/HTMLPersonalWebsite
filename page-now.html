@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Now — Daniel Clift</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0f0c08;--ink2:#333;--ink3:#444;--ink4:#666;--ink5:#888;--bg:#f5f0e8;--bg2:#e8e0d0;--red:#c0392b;--ochre:#d4943a;--slate:#2c4a6e;--sage:#4a6741;--border:3px solid var(--ink);--shadow:5px 5px 0 var(--ink);--shadow-lg:8px 8px 0 var(--ink);--chrome:#1a1510;--chrome-t:#c8c0b0;}
+.dark{--ink:#f5f0e8;--ink2:#ccc;--ink3:#bbb;--ink4:#999;--ink5:#777;--bg:#0f0c08;--bg2:#1a1510;--border:3px solid #f5f0e8;--shadow:5px 5px 0 #f5f0e8;--shadow-lg:8px 8px 0 #f5f0e8;--chrome:#000000;--chrome-t:#a09880;}
+body{background:var(--bg);color:var(--ink);font-family:'Space Grotesk',sans-serif;transition:background 0.2s,color 0.2s;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.bd-o{background-color:var(--ochre);background-image:radial-gradient(circle,rgba(15,12,8,0.4) 1.4px,transparent 1.4px);background-size:7px 7px;}
+.bd-r{background-color:var(--red);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 3px,transparent 3px);background-size:10px 10px;}
+.bd-s{background-color:var(--slate);background-image:radial-gradient(circle,rgba(255,255,255,0.2) 1.3px,transparent 1.3px);background-size:7px 7px;}
+.bd-g{background-color:var(--sage);background-image:radial-gradient(circle,rgba(255,255,255,0.18) 1.2px,transparent 1.2px);background-size:6px 6px;}
+.bd-raw{background-color:var(--bg2);background-image:radial-gradient(circle,rgba(15,12,8,0.18) 1px,transparent 1px);background-size:5px 5px;}
+.dark .bd-raw{background-image:radial-gradient(circle,rgba(245,240,232,0.18) 1px,transparent 1px);}
+header{border-bottom:var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;min-height:64px;background:var(--bg);}
+.h-name{font-size:1.3rem;font-weight:900;letter-spacing:-0.03em;padding:0 1.4rem;border-right:var(--border);display:flex;align-items:center;background:var(--ink);color:var(--bg);white-space:nowrap;}
+.h-sub{display:flex;align-items:center;padding:0 1.4rem;font-size:0.72rem;color:var(--ink4);font-family:'JetBrains Mono',monospace;border-right:var(--border);}
+nav{display:flex;}
+nav a{display:flex;align-items:center;height:100%;padding:0 1.1rem;font-size:0.75rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:var(--ink);border-right:var(--border);transition:opacity 0.15s;}
+nav a:hover{opacity:0.7;}
+nav a.n1{background-color:var(--ochre);background-image:radial-gradient(circle,rgba(15,12,8,0.4) 1.4px,transparent 1.4px);background-size:7px 7px;}
+nav a.n2{background-color:var(--red);background-image:radial-gradient(circle,rgba(15,12,8,0.35) 3px,transparent 3px);background-size:10px 10px;color:#f5f0e8;}
+nav a.n3{background-color:var(--slate);background-image:radial-gradient(circle,rgba(255,255,255,0.2) 1.3px,transparent 1.3px);background-size:7px 7px;color:#f5f0e8;}
+nav a.n4{background:var(--sage);color:#f5f0e8;}
+nav a.n5{background:var(--ink);color:var(--bg);}
+.dm-btn{display:flex;align-items:center;height:100%;padding:0 1rem;font-size:0.75rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:transparent;border:none;border-left:var(--border);color:var(--ink);cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:background 0.15s,color 0.15s;}
+.dm-btn:hover{background:var(--ink);color:var(--bg);}
+.divider{display:grid;grid-template-columns:3fr 2fr 1fr 2fr;height:12px;border-top:3px solid var(--chrome);border-bottom:3px solid var(--chrome);}
+.divider div{border-right:2px solid var(--chrome);}
+.divider div:last-child{border-right:none;}
+footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding:1.25rem 1.5rem;background:var(--chrome);}
+.dark footer{background:#0f0c08;}
+.f-name{font-size:0.95rem;font-weight:900;letter-spacing:-0.02em;color:var(--chrome-t);}
+.f-meta{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#555;margin-top:2px;}
+.f-links{display:flex;gap:14px;}
+.f-links a{font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#666;text-decoration:none;transition:color 0.15s;}
+.f-links a:hover{color:var(--ochre);}
+.sec-horiz{padding:9px 1.5rem;font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--bg);background:var(--ink);border-bottom:var(--border);font-family:'JetBrains Mono',monospace;}
+/* banner — no hero, opens direct */
+.now-banner{display:grid;grid-template-columns:56px 1fr;border-bottom:var(--border);min-height:100px;}
+.now-vert{border-right:var(--border);writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;color:#f5f0e8;}
+.now-banner-right{padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;background:var(--bg);}
+.now-title{font-size:clamp(1.5rem,3vw,2.5rem);font-weight:900;letter-spacing:-0.03em;color:var(--ink);}
+.now-updated{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--ink5);}
+/* focus cells */
+.focus-grid{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:var(--border);}
+.focus-cell{border-right:var(--border);padding:1.75rem;background:var(--bg);position:relative;overflow:hidden;}
+.focus-cell:last-child{border-right:none;}
+.focus-label{font-family:'JetBrains Mono',monospace;font-size:0.6rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink5);margin-bottom:0.6rem;}
+.focus-cell h2{font-size:1.1rem;font-weight:900;letter-spacing:-0.02em;margin-bottom:0.6rem;color:var(--ink);}
+.focus-cell p{font-size:0.85rem;line-height:1.7;color:var(--ink3);}
+/* status strip */
+.status-strip{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:var(--border);}
+.si{border-right:var(--border);padding:1.1rem 1.25rem;position:relative;overflow:hidden;}
+.si:last-child{border-right:none;}
+.si-k{font-family:'JetBrains Mono',monospace;font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;color:var(--ink5);}
+.si-v{font-size:0.9rem;font-weight:700;color:var(--ink);}
+.si-ink{background:var(--ink);}
+.si-ink .si-k{color:var(--ink4);}
+.si-ink .si-v{color:var(--bg);}
+.si-s .si-k{color:rgba(245,240,232,0.5);}
+.si-s .si-v{color:#f5f0e8;}
+.si-o .si-k{color:rgba(15,12,8,0.5);}
+/* log */
+.log-row{display:flex;gap:1.5rem;align-items:baseline;padding:12px 1.5rem;border-bottom:1.5px solid var(--ink);background:var(--bg);}
+.log-row:last-child{border-bottom:none;}
+.log-date{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--ink5);white-space:nowrap;min-width:90px;}
+.log-text{font-size:0.88rem;color:var(--ink2);line-height:1.5;}
+/* == responsive == */
+html{background:#f5f0e8;}
+html.dark{background:#0f0c08;}
+body{max-width:1440px;margin:0 auto;}
+@media(max-width:960px){header{grid-template-columns:auto 1fr;}.h-sub{display:none;}}
+@media(max-width:768px){
+  .focus-grid{grid-template-columns:1fr;}
+  .focus-cell{border-right:none;}
+  .status-strip{grid-template-columns:repeat(2,1fr);}
+  .si:nth-child(odd){border-right:var(--border);}
+  .si:nth-child(even){border-right:none;}
+}
+@media(max-width:640px){
+  header{display:flex;flex-wrap:wrap;}
+  .h-name{flex:0 0 100%;border-right:none;border-bottom:var(--border);padding:1rem 1.4rem;}
+  nav{flex:0 0 100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  nav::-webkit-scrollbar{display:none;}
+  nav a{height:44px;white-space:nowrap;flex-shrink:0;}
+  .dm-btn{flex-shrink:0;}
+  .now-banner{grid-template-columns:1fr;}
+  .now-vert{display:none;}
+  .now-title{font-size:1.3rem;}
+  .status-strip{grid-template-columns:1fr;}
+  .si{border-right:none;border-bottom:var(--border);}
+  .si:last-child{border-bottom:none;}
+}
+@media(max-width:480px){
+  .log-row{flex-direction:column;gap:0.2rem;padding:10px 1rem;}
+  .log-date{min-width:0;}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-name">Daniel Clift</div>
+  <div class="h-sub">Now — a living snapshot, updated monthly</div>
+  <nav>
+    <a href="index.html" class="n1">Projects</a>
+    <a href="writing.html" class="n2">Writing</a>
+    <a href="now.html" class="n3">Now</a>
+    <a href="spain.html" class="n4">Spain</a>
+    <a href="about.html" class="n5">About</a>
+    <button class="dm-btn" id="dmb" onclick="toggleDark()">&#9680; Dark</button>
+  </nav>
+</header>
+
+<div class="now-banner">
+  <div class="now-vert bd-s">Now</div>
+  <div class="now-banner-right">
+    <div>
+      <div class="now-title">What I'm up to — May 2026</div>
+      <p style="font-size:0.8rem;color:var(--ink4);font-family:'JetBrains Mono',monospace;margin-top:4px;">A living page. Not a blog post. Updated when things change.</p>
+    </div>
+    <span class="now-updated">Last updated: 28 May 2026</span>
+  </div>
+</div>
+
+<div class="focus-grid">
+  <div class="focus-cell">
+    <svg style="position:absolute;top:12px;right:12px;width:60px;opacity:0.1;" viewBox="0 0 120 30"><path d="M5 20 Q30 5 60 18 Q90 30 115 10" fill="none" stroke="#0f0c08" stroke-width="5" stroke-linecap="round"/></svg>
+    <div class="focus-label">Building</div>
+    <h2>iOS open data app</h2>
+    <p>Deep into the TfL API. Real-time arrivals works well. Companies House is painful. MOT history is the hidden gem. Postcode.io is excellent and underused.</p>
+  </div>
+  <div class="focus-cell">
+    <svg style="position:absolute;top:14px;right:14px;width:34px;opacity:0.1;" viewBox="0 0 40 40"><path d="M5 5 L35 35 M35 5 L5 35" stroke="#0f0c08" stroke-width="6" stroke-linecap="round"/></svg>
+    <div class="focus-label">Exploring</div>
+    <h2>AI agent frameworks</h2>
+    <p>Six months in. OpenClaw promising for inbox tasks. Claude in M365 is the most plug-and-play. The gap between demo and production is large. Writing it all up.</p>
+  </div>
+  <div class="focus-cell">
+    <svg style="position:absolute;top:12px;right:10px;width:50px;opacity:0.1;" viewBox="0 0 60 40"><path d="M5 35 Q30 0 55 35" fill="none" stroke="#0f0c08" stroke-width="6" stroke-linecap="round"/></svg>
+    <div class="focus-label">Planning</div>
+    <h2>The Spain move</h2>
+    <p>NIE submitted. Property alerts active for Cádiz and Málaga. Two viewings booked. Talking to a gestor about tax residency. Target: Q1 2027.</p>
+  </div>
+</div>
+
+<div class="divider"><div class="bd-g"></div><div style="background:var(--chrome);"></div><div class="bd-o"></div><div class="bd-r"></div></div>
+
+<div class="status-strip">
+  <div class="si bd-o si-o"><div class="si-k">Reading</div><div class="si-v">Spanish property law for foreigners</div></div>
+  <div class="si si-ink"><div class="si-k">Listening</div><div class="si-v">Notes in Spanish podcast</div></div>
+  <div class="si bd-s si-s"><div class="si-k">Using</div><div class="si-v">PyCharm · Claude · Astro</div></div>
+  <div class="si bd-raw"><div class="si-k">Location</div><div class="si-v">Surrey, UK</div></div>
+</div>
+
+<div class="divider"><div style="background:var(--chrome);"></div><div class="bd-s"></div><div class="bd-g"></div><div class="bd-o"></div></div>
+
+<div class="sec-horiz">Recent changes to this page</div>
+<div class="log-row"><span class="log-date">28 May 2026</span><span class="log-text">Updated Spain section — viewings booked, gestor contact made</span></div>
+<div class="log-row"><span class="log-date">3 Apr 2026</span><span class="log-text">Added AI frameworks section. Swapped reading to Spanish property law.</span></div>
+<div class="log-row" style="border-bottom:none;"><span class="log-date">1 Mar 2026</span><span class="log-text">First version of this page published.</span></div>
+
+<div class="divider"><div class="bd-r"></div><div class="bd-o"></div><div style="background:var(--chrome);"></div><div class="bd-s"></div></div>
+<footer>
+  <div><div class="f-name">Daniel Clift</div><div class="f-meta">Surrey · Spain-bound · Built raw · 2026</div></div>
+  <div class="f-links"><a href="#">GitHub</a><a href="#">LinkedIn</a><a href="#">RSS</a><a href="#">Email</a></div>
+</footer>
+<script>function toggleDark(){const d=document.body.classList.toggle('dark');document.documentElement.classList.toggle('dark',d);document.getElementById('dmb').textContent=d?'◑ Light':'◐ Dark';}</script>
+</body>
+</html>

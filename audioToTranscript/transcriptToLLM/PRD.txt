@@ -1,0 +1,275 @@
+PRD: Local-Only LLM processing of Audio Transcription Web Application
+1. Product Overview
+Build a fully local web application that allows a user to upload a transcript of a call or meeting or training process the text using a locally executed AI model, and allow the user to ask questions.
+The application must operate 100% locally on the user’s machine after loading the web app, with no server-side LLM processing and no requirement to upload transcript or chat to any remote service. The app should support downloading LLM models dynamically, caching them locally so they do not need to be downloaded again on future page loads.
+The UI should be simple, fast, and accessible, with an optional expandable Options panel containing configurable  settings. User-selected settings should persist using cookies.
+
+The look and feel should resemble the html and css allready present.
+
+
+1. Overview
+1.1 Summary
+This application is a fully local, browser-based web application that allows users to upload transcripts from calls, meetings, or training sessions, process them using a locally executed AI/LLM, and ask natural‑language questions about the content.
+Once the web app has loaded, all functionality operates 100% locally on the user’s machine:
+
+No server-side inference
+No remote API calls for transcript processing or Q&A
+No uploading transcripts or chat history to external services
+
+The application supports dynamic local LLM downloads, caches models for reuse, and provides a simple, fast, accessible UI consistent with the application's existing HTML and CSS styling.
+
+2. Goals & Objectives
+2.1 Primary Goals
+
+Enable private, offline-friendly transcript analysis and Q&A
+Deliver a fast, lightweight, local-first AI experience
+Preserve user data privacy by eliminating cloud dependencies
+Minimize friction for non-technical users
+
+2.2 Success Metrics
+
+App usable end-to-end with no internet after initial load and model download
+Model download only required once per model
+Transcript Q&A latency acceptable on consumer hardware (<5s per response for reasonable transcript sizes)
+Zero remote network calls after loading (excluding optional model download)
+Settings reliably persist across sessions
+
+
+3. Non‑Goals
+
+Realtime transcription (audio → text)
+Multi-user collaboration
+Cloud sync or user accounts
+Fine-tuning models or training new models
+Cross-device transcript syncing
+
+
+4. Target Users
+4.1 Primary Users
+
+Sales, training, or customer success professionals
+Knowledge workers reviewing long meetings or calls
+Users with privacy or compliance concerns
+
+4.2 User Characteristics
+
+Comfortable using modern browsers
+Not necessarily technical
+Expect consumer-grade responsiveness and UI simplicity
+
+
+5. User Experience & Flows
+5.1 Primary User Flow
+
+User opens the web app
+(Optional) User downloads a local LLM model
+User uploads a transcript file or pastes text
+Transcript is processed/indexed locally
+User asks questions about the transcript
+AI responses reference transcript content
+User optionally adjusts settings in the Options panel
+
+5.2 Secondary Flows
+
+Switching LLM models
+Re-processing transcript with different chunking or prompt settings
+Clearing local cache and data
+
+
+6. Functional Requirements
+6.1 Transcript Management
+
+Users must be able to:
+
+Upload transcript files (e.g., .txt, .md)
+Paste transcript text directly into the UI
+
+
+Application must:
+
+Parse text locally
+Handle large transcripts (configurable max size)
+Display transcript preview or summary
+
+
+
+
+6.2 AI Processing & Q&A
+
+AI inference must:
+
+Run entirely on the user’s machine
+Use a locally executed LLM (WebAssembly, WebGPU, or similar)
+
+
+Users can:
+
+Ask freeform natural-language questions
+Receive responses grounded in transcript content
+
+
+System should:
+
+Chunk transcript text for efficient retrieval
+Use embeddings or local retrieval where applicable
+Avoid hallucinations by scoping answers to transcript data
+
+
+
+
+6.3 Model Management
+
+Application must support:
+
+Dynamic downloading of supported LLM models
+Clear indication of download size and progress
+
+
+Downloaded models:
+
+Must be cached locally (IndexedDB / filesystem where available)
+Should not require re-download across sessions
+
+
+Users can:
+
+Select active model
+Delete cached models
+
+
+
+
+6.4 Offline Operation
+
+After initial app load:
+
+No network connectivity required
+All transcript processing and chat occur locally
+
+
+App must gracefully:
+
+Detect offline mode
+Prevent actions requiring a network (e.g. model download)
+
+
+
+
+6.5 Settings & Persistence
+
+Application includes an expandable “Options” panel
+Configurable settings may include:
+
+Selected model
+Max context/window size
+Chunk size / overlap
+Temperature / response length
+UI preferences
+
+
+All settings:
+
+Persist using cookies or local storage
+Restore automatically on page reload
+
+
+
+
+7. UI / UX Requirements
+7.1 Design Principles
+
+Simple, minimal, and fast
+Keyboard-accessible
+Clear loading and processing states
+Low visual noise
+
+7.2 Look & Feel
+
+UI must:
+
+Match the existing HTML and CSS styling
+Avoid introducing new visual paradigms
+
+
+Layout:
+
+Primary transcript input area
+Chat/Q&A panel
+Collapsible Options panel
+
+
+Accessible:
+
+Proper labels
+ARIA roles where relevant
+High contrast support
+
+
+
+
+8. Technical Requirements
+8.1 Architecture
+
+Single-page web application
+Runs fully client-side
+No backend servers required
+
+8.2 AI Execution
+
+Locally executed LLM via:
+
+WebAssembly / WebGPU-based runtimes
+
+
+No cloud inference
+No telemetry by default
+
+8.3 Storage
+
+Models cached locally
+Transcripts stored temporarily or explicitly by user choice
+Settings stored using cookies or localStorage
+
+8.4 Performance
+
+Designed for modern Chromium, Firefox, Safari
+Graceful degradation if WebGPU unavailable
+Clear warnings for unsupported hardware
+
+
+9. Security & Privacy
+
+No transcript data leaves the user’s machine
+No background uploads or analytics
+Explicit user consent before downloading models
+No default logging of chat or transcript history
+
+
+10. Edge Cases & Error Handling
+
+Large transcript exceeds memory limits
+Model download interrupted
+Insufficient system resources
+Unsupported browser or device
+Corrupted cached model
+
+Each case should present:
+
+Clear error message
+Guidance for resolution
+
+
+11. Future Enhancements (Out of Scope for MVP)
+
+Transcript highlighting and citation linking
+Multi-transcript comparison
+Exporting summaries or answers
+Voice-based querying
+Plugin-based model support
+
+
+12. Open Questions
+
+Which specific LLMs are supported initially?
+Maximum supported transcript size?
+Default chunking and retrieval strategy?

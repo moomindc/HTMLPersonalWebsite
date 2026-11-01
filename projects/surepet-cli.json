@@ -1,0 +1,11 @@
+{
+  "name": "SurePet CLI",
+  "description": "A Python command-line tool for checking and controlling Sure Petcare smart cat flaps. It shows each flap's curfew schedule, lock mode and battery level, shows whether each pet is inside or outside, and lets you toggle a pet's recorded location. It uses the unofficial Sure Petcare API and works with the DualScan Cat Flap Connect and Cat Flap Connect.",
+  "date": "2026",
+  "version": "0.1",
+  "language": "Python",
+  "status": "in-progress",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/moomindc/pythonSurePet" }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Plex Offline",
+  "description": "A simple Python command-line tool for searching a shared Plex library and downloading media for offline viewing. Sign in with your Plex account (2FA supported), search interactively, pick a movie, season or episodes, and it downloads the original file with a progress bar, plus external subtitles in your chosen language. No re-encoding and no ffmpeg needed. Login and server choice are cached, and flags make it scriptable.",
+  "date": "2026",
+  "version": "0.1",
+  "language": "Python",
+  "status": "in-progress",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/moomindc/pythonPlexDownloader" }
+  ]
+}
